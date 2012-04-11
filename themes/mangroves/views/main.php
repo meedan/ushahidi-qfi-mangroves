@@ -142,7 +142,7 @@ $(function(){
 			if (isset($shares))
 			{
 				?>
-				<!--div id="other-deployments-box">
+				<div id="other-deployments-box">
 				  <a class="btn toggle" id="other-deployments-menu-toggle" class="" href="#sharing_switch"><?php echo Kohana::lang('ui_main.other_ushahidi_instances');?> <span class="btn-icon ic-right">&raquo;</span></a>
   				<!-- Layers (Other Ushahidi Layers) -->
   				<ul id="sharing_switch" class="category-filters map-menu-box">
@@ -156,7 +156,7 @@ $(function(){
   					}
   					?>
   				</ul>
-  			</div -->
+  			</div>
   			<!-- /Layers -->
 				<?php
 			}
