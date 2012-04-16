@@ -263,6 +263,7 @@ class Reports_Controller extends Main_Controller {
 		$form = array(
 			'incident_title' => '',
 			'incident_description' => '',
+			'incident_active' => '1',
 			'incident_date' => '',
 			'incident_hour' => '',
 			'incident_minute' => '',
@@ -297,6 +298,7 @@ class Reports_Controller extends Main_Controller {
 		$form['incident_minute'] = date('i');
 		$form['incident_ampm'] = date('a');
 		$form['country_id'] = Kohana::config('settings.default_country');
+		$form['incident_active'] = 1;
 
 		// Initialize Default Value for Hidden Field Country Name, just incase Reverse Geo coding yields no result
 		$country_name = ORM::factory('country',$form['country_id']);

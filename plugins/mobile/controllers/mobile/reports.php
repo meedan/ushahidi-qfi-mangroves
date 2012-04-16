@@ -125,6 +125,7 @@ class Reports_Controller extends Mobile_Controller {
 			'incident_title' => '',
 			'incident_description' => '',
 			'incident_month' => '',
+			'incident_active' => '1',
 			'incident_day' => '',
 			'incident_year' => '',
 			'incident_hour' => '',
@@ -269,6 +270,7 @@ class Reports_Controller extends Mobile_Controller {
 					.":00 ".$post->incident_ampm;
 				$incident->incident_date = date( "Y-m-d H:i:s", strtotime($incident_date . " " . $incident_time) );				
 				$incident->incident_dateadd = date("Y-m-d H:i:s",time());
+				$incident->active = 1;
 				$incident->save();
 
 				// STEP 3: SAVE CATEGORIES
