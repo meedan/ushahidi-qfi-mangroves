@@ -69,6 +69,7 @@
 			<!-- submit incident -->
 			<?php echo $submit_btn; ?>
 			<!-- / submit incident -->
+				<div class="welcome-logos"><a href="http://qfi.org"><img src="/themes/mangroves/images/qfi-header.png" style="padding-right:10px;" alt="Qatar Foundation International"></a><a href="http://www.conservation.org/"><img src="/themes/mangroves/images/ci-header.png" alt="Conservation International"></a></div>
 
 		</div>
 		<!-- / header -->
