@@ -9,6 +9,8 @@
 	// Action::header_scripts - Additional Inline Scripts from Plugins
 	Event::run('ushahidi_action.header_scripts');
 	?>
+
+	<link href='http://fonts.googleapis.com/css?family=Nunito' rel='stylesheet' type='text/css'>
 </head>
 
 
@@ -36,23 +38,16 @@
 
 <?php echo $header_nav; ?>
 
-  <!-- top bar-->
+  <!-- 
   <div id="top-bar">
-    <!-- searchbox -->
-		<div id="searchbox">
 
-			<!-- languages -->
 			<?php echo $languages;?>
-			<!-- / languages -->
 
-			<!-- searchform -->
 			<?php echo $search; ?>
-			<!-- / searchform -->
 
     </div>
   </div>
-  <!-- / searchbox -->
-
+  -->
 
 	<!-- wrapper -->
 	<div class="rapidxwpr floatholder">
@@ -85,7 +80,7 @@
 		<!-- main body -->
 		<div id="middle">
 			<div class="background layoutleft">
-
+				<div class="welcome-message"> Mapping the Mangroves is a project focused on increasing awareness, promoting conversations, and fostering actions around preservation of the world's mangroves.</div>
 				<!-- mainmenu -->
 				<div id="mainmenu" class="clearingfix">
 					<ul>

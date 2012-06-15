@@ -151,6 +151,7 @@ class Themes_Core {
 
 		if ($this->map_enabled)
 		{
+
 			$core_js .= $this->api_url;
 
 			if ($this->main_page || $this->this_page == "alerts")
@@ -263,7 +264,7 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 		// If we didn't find any languages, we need to look them up and set the cache
 		if( ! $locales)
 		{
-			$locales = locale::get_i18n();
+			$locales = ush_locale::get_i18n();
 			$this->cache->set('locales', $locales, array('locales'), 604800);
 		}
 
@@ -281,7 +282,7 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 
 		$languages = "";
 		$languages .= "<div class=\"language-box\">";
-		$languages .= "<form action=\"\">";
+		$languages .= form::open(NULL, array('method' => 'get'));
 
 		/**
 		 * E.Kala - 05/01/2011
@@ -304,7 +305,7 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 
 		$languages .= form::dropdown('l', $locales, Kohana::config('locale.language'),
 			' onchange="this.form.submit()" ');
-		$languages .= "</form>";
+		$languages .= form::close();
 		$languages .= "</div>";
 
 		return $languages;
@@ -314,12 +315,12 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 	{
 		$search = "";
 		$search .= "<div class=\"search-form\">";
-		$search .= "<form method=\"get\" id=\"search\" action=\"".url::site()."search/\">";
+		$search .= form::open("search", array('method' => 'get', 'id' => 'search'));
 		$search .= "<ul>";
 		$search .= "<li><input type=\"text\" name=\"k\" value=\"\" class=\"text\" /></li>";
 		$search .= "<li><input type=\"submit\" name=\"b\" class=\"searchbtn\" value=\"".Kohana::lang('ui_main.search')."\" /></li>";
 		$search .= "</ul>";
-		$search .= "</form>";
+		$search .= form::close();
 		$search .= "</div>";
 
 		return $search;
@@ -368,21 +369,47 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 
 			</script>";
 		}
+
+		// See if we need to disqualify showing the tag on the admin panel
+		if (Kohana::config('config.google_analytics_in_admin') == FALSE
+			AND isset(Router::$segments[0])
+			AND Router::$segments[0] == 'admin')
+		{
+			// Site is configured to not use the google analytics tag in the admin panel
+			//   and we are in the admin panel. Wipe out the tag.
+			$html = '';
+		}
+
+
 		return $html;
 	}
 
-	/*
-	* Scheduler JS Call
-	*/
+	/**
+	 * Scheduler JS Call
+	 *
+	 * @return string
+	 */
 	public function scheduler_js()
 	{
-		return '<!-- Task Scheduler --><script type="text/javascript">$(document).ready(function(){$(\'#schedulerholder\').html(\'<img src="'.url::base().'scheduler" />\');});</script><div id="schedulerholder"></div><!-- End Task Scheduler -->';
+		if (Kohana::config('config.output_scheduler_js'))
+		{
+			return '<!-- Task Scheduler -->'
+			    . '<script type="text/javascript">'
+			    . 'jQuery(document).ready(function(){'
+			    . '	jQuery(\'#schedulerholder\').html(\'<img src="'.url::base().'scheduler" />\');'
+			    . '});'
+                . '</script>'
+                . '<div id="schedulerholder"></div>'
+                . '<!-- End Task Scheduler -->';
+		}
+		return '';
 	}
 
 	/*
 	* CDN Gradual Upgrade JS Call
-	*   This upgrader pushes files from local server to the CDN in a gradual fashion so there doesn't need to
-	*   be any downtime when a deployer makes the switch to a CDN
+	*   This upgrader pushes files from local server to the CDN in a gradual
+	*   fashion so there doesn't need to be any downtime when a deployer makes
+	*   the switch to a CDN
 	*/
 	public function cdn_gradual_upgrade()
 	{
@@ -395,7 +422,8 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 
 	/*
 	* Ushahidi Stats JS Call
-	*    If a deployer is using Ushahidi to track their stats, this is the JS call for that
+	*    If a deployer is using Ushahidi to track their stats, this is the JS
+	*    call for that
 	*/
 	public function ushahidi_stats_js()
 	{
