@@ -313,7 +313,7 @@
 	'no_reports' => 'There are no reports',
 	'no_results' => 'There are no results',
 	'off' => 'Off',
-	'official_news' => 'Official &amp; mainstream news',
+	'official_news' => 'Official News',
 	'on' => 'On',
 	'option' => 'Option',
 	'optional' => 'Optional',
