@@ -6,7 +6,7 @@
  * you are encouraged to set this option. An empty setting allows the cookie
  * to be read by any website domain.
  */
-$config['domain'] = '';
+$config['domain'] = 'mappingthemangroves.qfi.org';
 
 /**
  * Restrict cookies to a specific path, typically the installation directory.

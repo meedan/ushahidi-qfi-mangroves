@@ -15,7 +15,7 @@ Author Email: caleb@ushahidi.com
   table.table-list tbody tr td a,
   .hover .r_details h3 a.r_title,
   div.footermenu ul li a,
-  div.search-form input.text  { color: #D24836; }
+  div.search-form input.text  { color: #0069aa; }
   div.search-form input.text:focus { border-color: #0069aa; }
   div.submit-incident a, .btn_submit,
   div.filters ul li a:hover, div.filters ul li a.active,
@@ -79,6 +79,7 @@ width: 100%;
 }
 
 #map {
+border: solid 3px #0069aa;
 }
 /* general styles */
 h5, h4 {
@@ -203,9 +204,11 @@ div#mainmenu ul li a:hover, div#mainmenu a.active {
 }
 
 /* filter box */
-#report-map-filter-box { position:absolute; z-index:1000; }
+#report-map-filter-box { position:absolute; z-index:1; }
 
-div#right { position:absolute; z-index:1000; }
+div#right { position:absolute; z-index:1; }
+
+div.cat-filters strong { display: none; }
 
 .map-menu-box {
   position:absolute;
@@ -284,10 +287,16 @@ th, td { padding: 10px 0!important; }
 #block-reports .content-block, 
 #block-news .content-block {
   margin: 0;
-  padding: 0;
+  padding:0 ;
   float: left; 
   clear: both;
 }
+
+#block-reports .content-block {
+  border-right: solid 1px #CCC;
+  margin-right: 20px;
+}
+
 #content-column {
   float: left;
 }
