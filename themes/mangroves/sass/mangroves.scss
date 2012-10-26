@@ -523,14 +523,9 @@ div.content-block .table-list {
   margin-top: 18px;
 }
 
-table.table-list thead th.date {
-  width: $full-width / 5;
-}
-
 th, td {
   padding: 10px 0!important;
 }
-
 
 #block-reports .content-block,
 #block-news .content-block {
@@ -538,7 +533,7 @@ th, td {
   padding: 0;
   float: left;
   clear: both;
-  width: 100%;
+  width: 98%;
   a {
     color: $mangrove-orange;
   }
@@ -717,4 +712,27 @@ span.btn-icon {
 
 .active-toggle .ic-right {
   background: transparent url(../images/bg_category-filter-controls.png) -32px -55px no-repeat;
+}
+
+/* NASTY HAX TO DEAL WITH STATIC PAGE CONTENT */
+
+.big-block {
+  h1 {
+    font-size: 25px;
+  } 
+}
+
+.page_text {
+  font {
+    font-size: 18px!important; 
+    background-color: white!important;
+  }
+  div, p { 
+    padding: 10px 0;
+    font-size: 18px!important; 
+    background-color: white!important;
+    strong {
+      font-size: 25px!important;
+    }
+  }
 }
