@@ -302,14 +302,19 @@ div#mainmenu a.active {
   color: #fff;
 }
 
+/* line 279, ../sass/mangroves.scss */
+#report-map #map {
+  width: 350px;
+}
+
 /* =======================================  filter box */
-/* line 280, ../sass/mangroves.scss */
+/* line 284, ../sass/mangroves.scss */
 #report-map-filter-box {
   position: absolute;
   z-index: 1;
 }
 
-/* line 285, ../sass/mangroves.scss */
+/* line 289, ../sass/mangroves.scss */
 div#right {
   position: absolute;
   z-index: 1;
@@ -318,7 +323,7 @@ div#right {
   width: 156px;
 }
 
-/* line 293, ../sass/mangroves.scss */
+/* line 297, ../sass/mangroves.scss */
 .map-menu-box {
   position: absolute;
   overflow: auto;
@@ -332,7 +337,7 @@ div#right {
   -ms-filter: "progid: DXImageTransform.Microsoft.Shadow(strength=1.5, Direction=180, Color='#424041')";
 }
 
-/* line 306, ../sass/mangroves.scss */
+/* line 310, ../sass/mangroves.scss */
 #the-filters {
   top: 62px;
   left: 760px;
@@ -340,7 +345,7 @@ div#right {
   display: block;
 }
 
-/* line 313, ../sass/mangroves.scss */
+/* line 317, ../sass/mangroves.scss */
 #the-filters h3 {
   z-index: 1;
   font-size: 10px;
@@ -350,7 +355,7 @@ div#right {
 }
 
 /* =======================================  type and category toggle button */
-/* line 322, ../sass/mangroves.scss */
+/* line 326, ../sass/mangroves.scss */
 #filter-menu-toggle {
   z-index: 1;
   position: absolute;
@@ -360,43 +365,43 @@ div#right {
 }
 
 /* =======================================  home page category filter */
-/* line 331, ../sass/mangroves.scss */
+/* line 335, ../sass/mangroves.scss */
 #report-category-filter {
   padding: 5px;
   float: left;
   width: 175px;
 }
 
-/* line 337, ../sass/mangroves.scss */
+/* line 341, ../sass/mangroves.scss */
 ul.category-filters {
   background: none;
   border: 0;
   padding: 0;
 }
 
-/* line 344, ../sass/mangroves.scss */
+/* line 348, ../sass/mangroves.scss */
 div.cat-filters strong {
   display: none;
   background: pink;
 }
 
-/* line 350, ../sass/mangroves.scss */
+/* line 354, ../sass/mangroves.scss */
 ul.category-filters {
   background: white;
   padding: 5px;
 }
-/* line 353, ../sass/mangroves.scss */
+/* line 357, ../sass/mangroves.scss */
 ul.category-filters li {
   display: block;
   list-style-type: none;
   overflow: auto;
   width: auto;
 }
-/* line 358, ../sass/mangroves.scss */
+/* line 362, ../sass/mangroves.scss */
 ul.category-filters li li {
   clear: left;
 }
-/* line 362, ../sass/mangroves.scss */
+/* line 366, ../sass/mangroves.scss */
 ul.category-filters li a {
   font-size: 10px;
   padding: 2px 4px 2px 2px;
@@ -406,7 +411,7 @@ ul.category-filters li a {
   margin: 1px;
   display: block;
 }
-/* line 373, ../sass/mangroves.scss */
+/* line 377, ../sass/mangroves.scss */
 ul.category-filters li a:hover,
 ul.category-filters li a.active {
   background: none;
@@ -415,7 +420,7 @@ ul.category-filters li a.active {
   margin: 0;
 }
 
-/* line 382, ../sass/mangroves.scss */
+/* line 386, ../sass/mangroves.scss */
 .swatch, .item-swatch {
   border-color: #f1f1f1;
   -moz-border-radius: 3px;
@@ -423,7 +428,7 @@ ul.category-filters li a.active {
 }
 
 /* =======================================  home page report type filters */
-/* line 390, ../sass/mangroves.scss */
+/* line 394, ../sass/mangroves.scss */
 #report-type-filter {
   display: none;
   overflow: auto;
@@ -431,7 +436,7 @@ ul.category-filters li a.active {
   margin: 0;
 }
 
-/* line 397, ../sass/mangroves.scss */
+/* line 401, ../sass/mangroves.scss */
 div.filters ul li {
   float: none;
   margin-bottom: 2px;
@@ -439,7 +444,7 @@ div.filters ul li {
   overflow: auto;
 }
 
-/* line 404, ../sass/mangroves.scss */
+/* line 408, ../sass/mangroves.scss */
 div.filters ul li a {
   color: #000;
   font-weight: bold;
@@ -450,12 +455,12 @@ div.filters ul li a {
   float: left;
 }
 
-/* line 414, ../sass/mangroves.scss */
+/* line 418, ../sass/mangroves.scss */
 div.filters ul li a span {
   font-size: 10px;
 }
 
-/* line 418, ../sass/mangroves.scss */
+/* line 422, ../sass/mangroves.scss */
 div.filters ul li a:hover, div.filters ul li a.active {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -470,7 +475,7 @@ div.filters ul li a:hover, div.filters ul li a.active {
 
 /* =======================================  KML layers & Other Deployments */
 /*toggle buttons */
-/* line 432, ../sass/mangroves.scss */
+/* line 436, ../sass/mangroves.scss */
 #layers-menu-toggle {
   position: absolute;
   top: 20px;
@@ -478,7 +483,7 @@ div.filters ul li a:hover, div.filters ul li a.active {
   width: 60px;
 }
 
-/* line 439, ../sass/mangroves.scss */
+/* line 443, ../sass/mangroves.scss */
 #other-deployments-menu-toggle {
   display: none;
   position: absolute;
@@ -487,7 +492,7 @@ div.filters ul li a:hover, div.filters ul li a.active {
   width: 130px;
 }
 
-/* line 447, ../sass/mangroves.scss */
+/* line 451, ../sass/mangroves.scss */
 #how-to-report-menu-toggle {
   position: absolute;
   top: 20px;
@@ -495,7 +500,7 @@ div.filters ul li a:hover, div.filters ul li a.active {
   width: 100px;
 }
 
-/* line 456, ../sass/mangroves.scss */
+/* line 460, ../sass/mangroves.scss */
 #kml_switch,
 #sharing_switch,
 #how-to-report-box {
@@ -509,29 +514,29 @@ div.filters ul li a:hover, div.filters ul li a.active {
   padding-top: 10px;
 }
 
-/* line 467, ../sass/mangroves.scss */
+/* line 471, ../sass/mangroves.scss */
 #sharing_switch {
   left: 322px;
 }
 
-/* line 471, ../sass/mangroves.scss */
+/* line 475, ../sass/mangroves.scss */
 #how-to-report-box ol {
   margin-left: 22px;
 }
 
-/* line 475, ../sass/mangroves.scss */
+/* line 479, ../sass/mangroves.scss */
 #how-to-report-box ol li {
   margin-bottom: 5px;
 }
 
 /* =======================================  home page map */
-/* line 480, ../sass/mangroves.scss */
+/* line 484, ../sass/mangroves.scss */
 #map {
   border: solid 3px #0069aa;
   width: 934px;
 }
 
-/* line 485, ../sass/mangroves.scss */
+/* line 489, ../sass/mangroves.scss */
 #mapStatus {
   border: 3px solid #c3c3c3;
   width: 934px;
@@ -541,50 +546,50 @@ div.filters ul li a:hover, div.filters ul li a.active {
 }
 
 /* =======================================  home page timeline */
-/* line 496, ../sass/mangroves.scss */
+/* line 500, ../sass/mangroves.scss */
 div.slider-holder,
 div.graph-holder {
   display: none;
 }
 
-/* line 500, ../sass/mangroves.scss */
+/* line 504, ../sass/mangroves.scss */
 .content-container {
   padding: 10px!important;
 }
 
 /* =======================================  home page how to report */
-/* line 505, ../sass/mangroves.scss */
+/* line 509, ../sass/mangroves.scss */
 div.additional-content {
   display: none;
 }
 
 /* =======================================  Home Page Twitter / Mainstream News blocks */
-/* line 510, ../sass/mangroves.scss */
+/* line 514, ../sass/mangroves.scss */
 div.content-container {
   background: transparent;
 }
 
-/* line 514, ../sass/mangroves.scss */
+/* line 518, ../sass/mangroves.scss */
 div.block-news {
   border-left: 1px solid #B8B8B8;
 }
 
-/* line 518, ../sass/mangroves.scss */
+/* line 522, ../sass/mangroves.scss */
 div.content-block h5 span {
   display: none;
 }
 
-/* line 522, ../sass/mangroves.scss */
+/* line 526, ../sass/mangroves.scss */
 div.content-block .table-list {
   margin-top: 18px;
 }
 
-/* line 526, ../sass/mangroves.scss */
+/* line 530, ../sass/mangroves.scss */
 th, td {
   padding: 10px 0!important;
 }
 
-/* line 531, ../sass/mangroves.scss */
+/* line 535, ../sass/mangroves.scss */
 #block-reports .content-block,
 #block-news .content-block {
   margin: 0;
@@ -593,29 +598,29 @@ th, td {
   clear: both;
   width: 98%;
 }
-/* line 537, ../sass/mangroves.scss */
+/* line 541, ../sass/mangroves.scss */
 #block-reports .content-block a,
 #block-news .content-block a {
   color: #d7463b;
 }
-/* line 540, ../sass/mangroves.scss */
+/* line 544, ../sass/mangroves.scss */
 #block-reports .content-block a.more,
 #block-news .content-block a.more {
   color: white;
 }
 
-/* line 545, ../sass/mangroves.scss */
+/* line 549, ../sass/mangroves.scss */
 #block-reports .content-block {
   border-right: solid 1px #CCC;
   margin-right: 20px;
 }
 
-/* line 550, ../sass/mangroves.scss */
+/* line 554, ../sass/mangroves.scss */
 #content-column {
   float: left;
 }
 
-/* line 554, ../sass/mangroves.scss */
+/* line 558, ../sass/mangroves.scss */
 .more {
   background: #3f8ebf;
   color: #ffffff;
@@ -625,24 +630,24 @@ th, td {
 }
 
 /* =======================================  reports listing page */
-/* line 563, ../sass/mangroves.scss */
+/* line 567, ../sass/mangroves.scss */
 #content .big-block {
   margin: 0 10px;
   padding: 18px 0;
 }
 
-/* line 568, ../sass/mangroves.scss */
+/* line 572, ../sass/mangroves.scss */
 #rb_list-view .rb_report {
   background: #fff;
 }
 
 /* =======================================  single report page */
-/* line 573, ../sass/mangroves.scss */
+/* line 577, ../sass/mangroves.scss */
 div#main {
   padding: 25px 10px;
 }
 
-/* line 577, ../sass/mangroves.scss */
+/* line 581, ../sass/mangroves.scss */
 #main .left-col {
   position: relative;
   padding: 35px 10px 10px;
@@ -650,7 +655,7 @@ div#main {
   width: 525px;
 }
 
-/* line 584, ../sass/mangroves.scss */
+/* line 588, ../sass/mangroves.scss */
 .left-col h1.report-title {
   float: left;
   position: absolute;
@@ -660,21 +665,21 @@ div#main {
   color: #0069aa;
 }
 
-/* line 593, ../sass/mangroves.scss */
+/* line 597, ../sass/mangroves.scss */
 .report_detail .r_verified {
   position: absolute;
   top: 10px;
   right: 18px;
 }
 
-/* line 599, ../sass/mangroves.scss */
+/* line 603, ../sass/mangroves.scss */
 div.report-additional-reports {
   position: relative;
   padding: 35px 10px 10px;
   margin-left: 18px;
 }
 
-/* line 605, ../sass/mangroves.scss */
+/* line 609, ../sass/mangroves.scss */
 div.report-additional-reports h4 {
   position: absolute;
   float: left;
@@ -684,55 +689,54 @@ div.report-additional-reports h4 {
   color: #0069aa;
 }
 
-/* line 614, ../sass/mangroves.scss */
+/* line 618, ../sass/mangroves.scss */
 div.report-additional-reports h5 {
   font-family: Arial, sans-serif;
 }
 
-/* line 618, ../sass/mangroves.scss */
+/* line 622, ../sass/mangroves.scss */
 div.comment-block {
   position: relative;
   padding: 35px 10px 10px;
-  margin-left: 18px;
 }
 
 /* =======================================  reports page */
-/* line 625, ../sass/mangroves.scss */
+/* line 628, ../sass/mangroves.scss */
 .report_right {
   width: 450px;
 }
 
 /* =======================================  get alerts page */
-/* line 630, ../sass/mangroves.scss */
+/* line 633, ../sass/mangroves.scss */
 .step-1 h2 {
   padding: 0;
 }
 
 /* =======================================  footer */
-/* line 635, ../sass/mangroves.scss */
+/* line 638, ../sass/mangroves.scss */
 div#footer {
   background: #ccc;
 }
 
-/* line 639, ../sass/mangroves.scss */
+/* line 642, ../sass/mangroves.scss */
 div#underfooter {
   background: transparent;
 }
 
-/* line 643, ../sass/mangroves.scss */
+/* line 646, ../sass/mangroves.scss */
 div.footermenu ul li a {
   text-transform: uppercase;
   font-weight: bold;
   border-left: 1px solid #666;
 }
 
-/* line 649, ../sass/mangroves.scss */
+/* line 652, ../sass/mangroves.scss */
 .additional-credits {
   margin-top: 18px;
 }
 
 /* =======================================  button styles */
-/* line 654, ../sass/mangroves.scss */
+/* line 657, ../sass/mangroves.scss */
 a.btn {
   cursor: pointer;
   display: inline-block;
@@ -763,14 +767,14 @@ a.btn {
   transition: 0.1s linear all;
 }
 
-/* line 684, ../sass/mangroves.scss */
+/* line 687, ../sass/mangroves.scss */
 a.btn:hover {
   background-position: 0 -15px;
   color: #333;
   text-decoration: none;
 }
 
-/* line 690, ../sass/mangroves.scss */
+/* line 693, ../sass/mangroves.scss */
 span.btn-icon {
   display: block;
   position: absolute;
@@ -782,44 +786,52 @@ span.btn-icon {
   right: 5px;
 }
 
-/* line 701, ../sass/mangroves.scss */
+/* line 704, ../sass/mangroves.scss */
 .ic-right {
   background: transparent url(../images/bg_category-filter-controls.png) -32px -41px no-repeat;
 }
 
-/* line 705, ../sass/mangroves.scss */
+/* line 708, ../sass/mangroves.scss */
 .ic-down {
   background: transparent url(../images/bg_category-filter-controls.png) -32px -55px no-repeat;
 }
 
-/* line 709, ../sass/mangroves.scss */
+/* line 712, ../sass/mangroves.scss */
 .ic-question {
   background: transparent url(../images/bg_category-filter-controls.png) 0px -49px no-repeat;
 }
 
-/* line 713, ../sass/mangroves.scss */
+/* line 716, ../sass/mangroves.scss */
 .active-toggle .ic-right {
   background: transparent url(../images/bg_category-filter-controls.png) -32px -55px no-repeat;
 }
 
+/* ======================================== Static content */
 /* NASTY HAX TO DEAL WITH STATIC PAGE CONTENT */
-/* line 720, ../sass/mangroves.scss */
+/* line 723, ../sass/mangroves.scss */
 .big-block h1 {
   font-size: 25px;
 }
 
-/* line 726, ../sass/mangroves.scss */
+/* line 729, ../sass/mangroves.scss */
 .page_text font {
   font-size: 18px!important;
   background-color: white!important;
 }
-/* line 730, ../sass/mangroves.scss */
+/* line 733, ../sass/mangroves.scss */
 .page_text div, .page_text p {
   padding: 10px 0;
   font-size: 18px!important;
   background-color: white!important;
 }
-/* line 734, ../sass/mangroves.scss */
+/* line 737, ../sass/mangroves.scss */
 .page_text div strong, .page_text p strong {
   font-size: 25px!important;
+}
+
+/* ========================================  Report page */
+/* hiding this because it is broken ... */
+/* line 745, ../sass/mangroves.scss */
+a.wider-map {
+  display: none;
 }
