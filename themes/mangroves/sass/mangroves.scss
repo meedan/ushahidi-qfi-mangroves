@@ -7,17 +7,41 @@ Author: Chris Blow
 Author Email: cblow@meedan.net
 */
 
+
+/* ==============================================  Colors and variables */
+$full-width: 940px;
+$mangrove-blue: #0069aa;
+$mangrove-orange: #d7463b;
+
+/* ==============================================  override defaults */
+.floatbox {
+  overflow: visible;
+}
+
+.floatbox .filters {
+  display: none;
+}
+
+/* ============================================== Main styles */
+
+/* contains the map and category switcher */
+#mainmiddle {
+  float: left;
+  width: $full-width;
+  position: relative;
+}
+
 h1,
 a,
 table.table-list tbody tr td a,
 .hover .r_details h3 a.r_title,
 div.footermenu ul li a,
 div.search-form input.text {
-  color: #0069aa;
+  color: $mangrove-blue;
 }
 
 div.search-form input.text:focus {
-  border-color: #0069aa;
+  border-color: $mangrove-blue;
 }
 
 div.submit-incident a,
@@ -76,6 +100,7 @@ h1, h2, h3, h4, h5 {
 
 #mainmenu {
   width: 600px;
+  background: white;
 }
 
 #mainmenu a {
@@ -84,25 +109,20 @@ h1, h2, h3, h4, h5 {
   font-weight: 100!important;
 }
 
+/* HACK TO HIDE SOME MENU ITEMS */
+/* WILL BREAK IF MENU IS REORDERED in DB */
 #mainmenu li:nth-child(2),
 #mainmenu li:nth-child(3),
 #mainmenu li:nth-child(4) {
   display: none;
 }
 
-#mainmiddle {
-  float: left;
-  clear: both;
-  width: 100%;
-}
 
-#map {
-  border: solid 3px #0069aa;
-}
+
 
 /* =======================================  general styles */
 h5, h4 {
-  color: #0069aa;
+  color: $mangrove-blue;
 }
 
 /* ======================================= structural divs */
@@ -125,7 +145,7 @@ div#middle {
 
 /* =======================================  top-bar */
 #top-bar {
-  width: 960px;
+  width: $full-width;
   background: #120000;
   height: 40px;
   position: relative;
@@ -209,13 +229,13 @@ div#logo span {
 
 div.green-box {
   background-color: #fff;
-  border-color: #0069aa;
+  border-color: $mangrove-blue;
   border-style: dashed;
 }
 
 div.green-box h3 {
   font-family: 'Helvetica', 'Arial', sans-serif;
-  color: #0069aa;
+  color: $mangrove-blue;
 }
 
 /* =======================================  submit report button */
@@ -265,10 +285,9 @@ div#mainmenu a.active {
 div#right {
   position: absolute;
   z-index: 1;
-}
-
-div.cat-filters strong {
-  display: none;
+  right: 30px;
+  top: 20px;
+  width: 156px;
 }
 
 .map-menu-box {
@@ -321,26 +340,44 @@ ul.category-filters {
   padding: 0;
 }
 
-ul.category-filters li {
-  display: block;
-  list-style-type: none;
-  overflow: auto;
+
+div.cat-filters strong {
+  display: none;
+  background: pink;
 }
 
-ul.category-filters li li {
-  clear: left;
+
+ul.category-filters {
+  background: white;
+  padding: 5px;
+  li {
+    display: block;
+    list-style-type: none;
+    overflow: auto;
+    width: auto;
+    li {
+      clear: left;
+    }
+
+    a {
+      font-size: 10px;
+      padding: 2px 4px 2px 2px;
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px;
+      border: 0;
+      margin: 1px;
+      display: block;
+    }
+  }
+  li a:hover,
+  li a.active {
+    background: none;
+    border: 1px solid #c2c2c2;
+    color: inherit;
+    margin: 0;
+  }
 }
 
-ul.category-filters li a {
-  font-size: 10px;
-  padding: 2px 4px 2px 2px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  float: left;
-  clear: right;
-  border: 0;
-  margin: 1px;
-}
 
 .swatch, .item-swatch {
   border-color: #f1f1f1;
@@ -348,13 +385,6 @@ ul.category-filters li a {
   -webkit-border-radius: 3px;
 }
 
-ul.category-filters li a:hover,
-ul.category-filters li a.active {
-  background: none;
-  border: 1px solid #c2c2c2;
-  color: inherit;
-  margin: 0;
-}
 
 /* =======================================  home page report type filters */
 #report-type-filter {
@@ -447,18 +477,17 @@ div.filters ul li a:hover, div.filters ul li a.active {
 }
 
 /* =======================================  home page map */
-div.map {
-  width: auto;
-  border: 1px solid #fff;
-  border-top: 0;
-  position: relative;
+#map {
+  border: solid 3px $mangrove-blue;
+  width: $full-width - 6;
 }
 
 #mapStatus {
-  width: auto;
+  border: 3px solid #c3c3c3;
+  width: $full-width - 6;
   float: none;
   overflow: auto;
-  border: 1px solid #fff;
+  border-top: none;
 }
 
 /* =======================================  home page timeline */
@@ -495,12 +524,13 @@ div.content-block .table-list {
 }
 
 table.table-list thead th.date {
-  width: 20%;
+  width: $full-width / 5;
 }
 
 th, td {
   padding: 10px 0!important;
 }
+
 
 #block-reports .content-block,
 #block-news .content-block {
@@ -508,6 +538,13 @@ th, td {
   padding: 0;
   float: left;
   clear: both;
+  width: 100%;
+  a {
+    color: $mangrove-orange;
+  }
+  a.more {
+    color: white;
+  }
 }
 
 #block-reports .content-block {
@@ -555,7 +592,7 @@ div#main {
   top: -18px;
   left: -18px;
   padding: 5px;
-  color: #0069aa;
+  color: $mangrove-blue;
 }
 
 .report_detail .r_verified {
@@ -576,7 +613,7 @@ div.report-additional-reports h4 {
   top: -18px;
   left: -18px;
   padding: 5px;
-  color: #0069aa;
+  color: $mangrove-blue;
 }
 
 div.report-additional-reports h5 {
