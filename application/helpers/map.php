@@ -126,23 +126,23 @@ class map_Core {
 		{
 			// We have two div ids that we use for maps, map and divMap. We need a more permanent
 			//   solution to cover any div name.
-			$js .= "if ( $(\"#map\").length > 0 ) { divName = \"map\" }else{ divName= \"divMap\" }"
-				. "var esriAttributionDiv = document.createElement('div');"
-			    . "$(esriAttributionDiv).html('"
-				. "<img src=\"http://www.arcgis.com/home/images/map/logo-sm.png\" style=\"float:right;\"/>"
-				. "<small style=\"position: absolute; bottom: -10px;\">"
-				. "Sources: Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, "
-				. "GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), "
-				. "and the GIS User Community"
-				. "</small>');\n"
-			    . "$(esriAttributionDiv).css({\n"
-			    . "\t'position': 'absolute',\n"
-			    . "\t'z-index': 10000,\n"
-			    . "\t'margin': '-40px 0 0 85px',\n"
-			    . "\t'right': $('div#'+divName).offset().right + 10,\n"
-			    . "\t'width': $('div#'+divName).width() - 90,\n"
-			    . "});\n"
-				. "$(esriAttributionDiv).appendTo($('div#'+divName));";
+			// $js .= "if ( $(\"#map\").length > 0 ) { divName = \"map\" }else{ divName= \"divMap\" }"
+			// 	. "var esriAttributionDiv = document.createElement('div');"
+			//     . "$(esriAttributionDiv).html('"
+			// 	. "<img src=\"http://www.arcgis.com/home/images/map/logo-sm.png\" style=\"float:right;\"/>"
+			// 	. "<small style=\"position: absolute; bottom: -10px;\">"
+			// 	. "Sources: Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, "
+			// 	. "GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), "
+			// 	. "and the GIS User Community"
+			// 	. "</small>');\n"
+			//     . "$(esriAttributionDiv).css({\n"
+			//     . "\t'position': 'absolute',\n"
+			//     . "\t'z-index': 10000,\n"
+			//     . "\t'margin': '-40px 0 0 85px',\n"
+			//     . "\t'right': $('div#'+divName).offset().right + 10,\n"
+			//     . "\t'width': $('div#'+divName).width() - 90,\n"
+			//     . "});\n"
+			// 	. "$(esriAttributionDiv).appendTo($('div#'+divName));";
 		}
 		
 		Event::run('ushahidi_filter.map_layers_js', $js);
@@ -219,7 +219,8 @@ class map_Core {
 			'baselayer' => TRUE,
 			'attribution' => '',
 			'url' => 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',
-			'type' => ''
+			'type' => '',
+			'transitionEffect' => 'resize',
 		);
 		$layers[$layer->name] = $layer;
 
@@ -235,7 +236,8 @@ class map_Core {
 			'baselayer' => TRUE,
 			'attribution' => '',
 			'url' => 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}',
-			'type' => ''
+			'type' => '',
+			'transitionEffect' => 'resize',
 		);
 		$layers[$layer->name] = $layer;
 
@@ -251,7 +253,8 @@ class map_Core {
 			'baselayer' => TRUE,
 			'attribution' => '',
 			'url' => 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}',
-			'type' => ''
+			'type' => '',
+			'transitionEffect' => 'resize',
 		);
 		$layers[$layer->name] = $layer;
 
@@ -267,7 +270,8 @@ class map_Core {
 			'baselayer' => TRUE,
 			'attribution' => '',
 			'url' => 'http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/${z}/${y}/${x}',
-			'type' => ''
+			'type' => '',
+			'transitionEffect' => 'resize',
 		);
 		$layers[$layer->name] = $layer;
 
@@ -278,11 +282,12 @@ class map_Core {
 		$layer->openlayers = "Google";
 		$layer->title = 'Google Maps Satellite';
 		$layer->description = 'Google Maps Satellite Imagery.';
-		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.2&amp;sensor=false';
+		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.7&amp;sensor=false';
 		$layer->api_signup = 'http://code.google.com/apis/maps/signup.html';
 		$layer->data = array(
 			'baselayer' => TRUE,
 			'type' => 'google.maps.MapTypeId.SATELLITE',
+			'animationEnabled' => TRUE,
 		);
 		$layers[$layer->name] = $layer;
 
@@ -293,11 +298,12 @@ class map_Core {
 		$layer->openlayers = "Google";
 		$layer->title = 'Google Maps Hybrid';
 		$layer->description = 'Google Maps with roads and terrain.';
-		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.2&amp;sensor=false';
+		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.7&amp;sensor=false';
 		$layer->api_signup = 'http://code.google.com/apis/maps/signup.html';
 		$layer->data = array(
 			'baselayer' => TRUE,
 			'type' => 'google.maps.MapTypeId.HYBRID',
+			'animationEnabled' => TRUE,
 		);
 		$layers[$layer->name] = $layer;
 
@@ -308,11 +314,12 @@ class map_Core {
 		$layer->openlayers = "Google";
 		$layer->title = 'Google Maps Normal';
 		$layer->description = 'Standard Google Maps Roads';
-		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.2&amp;sensor=false';
+		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.7&amp;sensor=false';
 		$layer->api_signup = 'http://code.google.com/apis/maps/signup.html';
 		$layer->data = array(
 			'baselayer' => TRUE,
 			'type' => '',
+			'animationEnabled' => TRUE,
 		);
 		$layers[$layer->name] = $layer;
 
@@ -323,11 +330,12 @@ class map_Core {
 		$layer->openlayers = "Google";
 		$layer->title = 'Google Maps Physical';
 		$layer->description = 'Google Maps Hillshades';
-		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.2&amp;sensor=false';
+		$layer->api_url = 'https://maps.google.com/maps/api/js?v=3.7&amp;sensor=false';
 		$layer->api_signup = 'http://code.google.com/apis/maps/signup.html';
 		$layer->data = array(
 			'baselayer' => TRUE,
 			'type' => 'google.maps.MapTypeId.TERRAIN',
+			'animationEnabled' => TRUE,
 		);
 		$layers[$layer->name] = $layer;
 
@@ -395,7 +403,8 @@ class map_Core {
 			'attribution' => '&copy;<a href="@ccbysa">CCBYSA</a> 2010
 				<a href="@openstreetmap">OpenStreetMap.org</a> contributors',
 			'url' => 'http://tile.openstreetmap.org/${z}/${x}/${y}.png',
-			'type' => ''
+			'type' => '',
+			'transitionEffect' => 'resize',
 		);
 		$layers[$layer->name] = $layer;
 
@@ -412,7 +421,8 @@ class map_Core {
 			'attribution' => '&copy;<a href="@ccbysa">CCBYSA</a> 2010
 				<a href="@openstreetmap">OpenStreetMap.org</a> contributors',
 			'url' => 'http://andy.sandbox.cloudmade.com/tiles/cycle/${z}/${x}/${y}.png',
-			'type' => ''
+			'type' => '',
+			'transitionEffect' => 'resize',
 		);
 		$layers[$layer->name] = $layer;
 
@@ -428,7 +438,8 @@ class map_Core {
 			'baselayer' => TRUE,
 			'attribution' => '©CCBYSA 2010 OpenStreetMap.org contributors',
 			'url' => 'http://tile.openstreetmap.org/transport/${z}/${x}/${y}.png',
-			'type' => ''
+			'type' => '',
+			'transitionEffect' => 'resize',
 		);
 		$layers[$layer->name] = $layer;
 
@@ -470,8 +481,8 @@ class map_Core {
 			$payload = $map_object->geoGetCoordsFull($address);
 
 			// Verify that the request succeeded
-			if ($payload->status != 'OK')
-				return FALSE;
+			if (! isset($payload->status)) return FALSE;
+			if ($payload->status != 'OK') return FALSE;
 
 			// Convert the Geocoder's results to an array
 			$all_components = json_decode(json_encode($payload->results), TRUE);

@@ -154,6 +154,22 @@ a:hover{ text-decoration:none;}
 	width:100px;
 }
 
+.info-nav .language-box{
+	margin:0;
+	padding:6px 0 9px 20px;
+	border-top:1px solid #898989;
+	border-bottom:1px solid #898989;
+	float:left;
+	line-height:25px;
+}
+.info-nav .language-box select{
+	width: 160px;
+	margin: 0;
+	padding: 1px;
+	font-size: 11px;
+	color: #00789F;
+}
+
 .info-buttons { clear:both; margin:10px 0 0 0; text-align:right; }
 
 /*-- nav-holder --*/
@@ -540,8 +556,12 @@ ul.tabset li a:hover{
 	color:#636363;
 	background:#f5f5f5;
 }
+ul.tabset li.right {
+	float: right;
+}
 /*-- tabs --*/
-.tab{
+/* Adding content tabs for where we just want a tab, but not the tab button style lists */
+.tab, .content-tab {
 	background:#eee;
 	width:100%;
 	clear:both;
@@ -551,7 +571,8 @@ ul.tabset li a:hover{
 .tab ul{
 	margin:0;
 	padding:9px 10px 0;
-	clear:both;
+	float:left;
+	clear:left;
 	overflow:hidden;
 }
 .tab ul li{
@@ -569,7 +590,8 @@ ul.tabset li a:hover{
 	border:1px solid #d1d1d1;
 }
 .tab ul li a:hover{ text-decoration:underline;}
-.tab .tab_form_item{
+.tab .tab_form_item,
+.content-tab .tab_form_item {
 	float:left;
 	margin:10px 10px 0 10px;
 }
@@ -733,6 +755,9 @@ table td{
 	margin:0;
 	padding:3px 20px 0 0;
 }
+.table .post .incident-id{
+	float:right;
+}
 .table th {
 	padding-top:0 !important;
 	padding-bottom:0 !important;
@@ -783,7 +808,7 @@ ul.links li a:hover{
 	float:left;
 	list-style:none;
 }
-.table .col-4 ul li a.del{ color:#b75f5f;}
+.table .col-4 ul li a.del, a.del { color:#b75f5f;}
 .table td .check-box { margin-top:2px !important;}
 
 /*-- tooltips --*/
@@ -990,6 +1015,15 @@ a.new-cat, a.show-messages {
 	float:right;
 }
 a.new-cat:hover, a.show-messages:hover{ text-decoration:none;}
+a.category_translations {
+	text-decoration:underline;
+	font-size:10px;
+	padding:5px 0 0 18px;
+	background:url(../../img/icon-plus.gif) no-repeat 0 4px;
+	float:left;
+	margin: 10px 10px 0 10px;
+}
+a.category_translations:hover {text-decoration: none;}
 .category {
 	background:#f5f5f5;
 	width:377px;
@@ -1013,6 +1047,20 @@ a.new-cat:hover, a.show-messages:hover{ text-decoration:none;}
 .category ul li label{
 	color:#555;
 	font-size:11px;
+}
+.category_translations_form_fields{
+	display:none;
+	margin: 10px 10px 0 10px
+}
+.category_translations_form_fields .category_lang {
+	margin-top:10px;
+	clear: left;
+}
+.category_translations_form_fields .tab_form_item {
+	margin: 0 20px 0 0;
+}
+#addedit .category_description {
+	width: 250px;
 }
 /*Categories Tree*/
 .category ul ul { width: auto; float: none; }
@@ -1222,12 +1270,18 @@ input.long2 {
 	width:180px;
 }
 
-.report-form .save-rep-btn,
-.report-form .save-close-btn,
-.report-form .cancel-btn{
+.save-rep-btn,
+.save-close-btn,
+.cancel-btn {
 	display:inline;
 	float:left;
-	margin:11px 12px 0 0;
+	margin:13px 12px 0 0;
+	padding:0 9px;
+	color:#5c5c5c;
+	background:#f2f7fa;
+	border:1px solid #d1d1d1;
+	text-transform: uppercase;
+	line-height: 24px;
 }
 .report-form .save-rep-btn { margin-left:20px;}
 .report-form .head .save-rep-btn,
@@ -1235,6 +1289,13 @@ input.long2 {
 	margin:0 9px 0 0;
 	display:inline;
 	float:right;
+}
+
+.save-rep-btn:hover,
+.save-close-btn:hover,
+.cancel-btn:hover
+{
+	cursor: pointer;
 }
 .report-form .report_thumbs {
 	border-bottom:1px #ccc dotted;
@@ -2298,6 +2359,7 @@ input[type="button"]:hover */ {
 /* jquery datePicker CSS */
 
 
+
 table.jCalendar {
 	border: 1px solid #000;
 	background: #aaa;
@@ -2425,6 +2487,8 @@ div.dp-popup td {
 div.dp-popup td.disabled {
 	cursor: default;
 }
+/* end datepicker css */
+
 .transparent-25 {
   /* IE 8 */
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
@@ -2473,3 +2537,29 @@ div.dp-popup td.disabled {
   /* Good browsers */
   opacity: 0.75;
 }
+
+/* Swatch style */
+.swatch {
+	width: 30px;
+	height: 30px;
+	display: inline-block;
+}
+/* Reports sort/order fields */
+.sort_by {
+	float: right;
+	margin: 0;
+	padding: 9px 10px 0;
+}
+.sort {
+	width: 18px;
+	height: 9px;
+	display: block;
+	float: right;
+	margin: 4px 0 0 6px;
+}
+	.sort-ASC {
+		background: url(../../img/admin/drag.gif) 0 0 no-repeat;
+	}
+	.sort-DESC {
+		background: url(../../img/admin/drag.gif) 0 -8px no-repeat;
+	}

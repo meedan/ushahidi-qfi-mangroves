@@ -21,13 +21,17 @@ if ( Kohana::config('config.enable_security_info') == TRUE)
 { ?>
 	<?php
 	$warnings = array();
-	if (Kohana::config('encryption.default.key') == "USHAHIDI-INSECURE")
+	if (Kohana::config('encryption.default.key') == "USHAHIDI-INSECURE" || Kohana::config('encryption.default.key') == "K0H@NA+PHP_7hE-SW!FtFraM3w0R|<")
 	{ 
 		$warnings[] = "<li>". Kohana::lang('ui_admin.security_info_encryption_key'). "</li>";
 	}
 	if (Kohana::config('config.site_protocol') == "http")
 	{
 		$warnings[] = "<li>". Kohana::lang('ui_admin.security_info_https'). "</li>";
+	}
+	if (file_exists(DOCROOT.DIRECTORY_SEPARATOR.'installer'))
+	{
+		$warnings[] = "<li>" .Kohana::lang('ui_admin.installer_info'). "</li>";
 	}
 	
 	if (count($warnings) > 0) 

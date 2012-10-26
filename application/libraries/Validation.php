@@ -30,6 +30,7 @@ class Validation_Core extends ArrayObject {
 
 	// Errors
 	protected $errors = array();
+	protected $error_message_args = array();
 	protected $messages = array();
 
 	// Checks if there is data to validate.
@@ -422,6 +423,7 @@ class Validation_Core extends ArrayObject {
 				if ( ! csrf::valid($form_auth_token))
 				{
 					Kohana::log('debug', 'Invalid CSRF token: '.$form_auth_token);
+					Kohana::log('debug', 'Actual CSRF token: '.csrf::token());
 					// Flag CSRF validation as having failed
 					$this->csrf_validation_failed = TRUE;
 
@@ -660,13 +662,19 @@ class Validation_Core extends ArrayObject {
 	 * @chainable
 	 * @param   string  input name
 	 * @param   string  unique error name
+	 * @param   array   extra vars to pass to kohana::lang()
 	 * @return  object
 	 */
-	public function add_error($field, $name)
+	public function add_error($field, $name, $lang_vars = FALSE)
 	{
 		if (isset($this[$field]) OR $field == 'custom')
 		{
 			$this->errors[$field] = $name;
+			// Save error message vars
+			if ($lang_vars)
+			{
+				$this->error_message_args[$field] = $lang_vars;
+			}
 		}
 
 		return $this;
@@ -731,8 +739,10 @@ class Validation_Core extends ArrayObject {
 			{
 				// Key for this input error
 				$key = "$file.$input.$error";
+				
+				$message_vars = isset($this->error_message_args[$input]) ? $this->error_message_args[$input] : array();
 
-				if (($errors[$input] = Kohana::lang($key)) === $key)
+				if (($errors[$input] = Kohana::lang($key, $message_vars)) === $key)
 				{
 					// Get the default error message.      Note: commented out by BH
 					//$errors[$input] = Kohana::lang("$file.$input.default");
@@ -740,7 +750,7 @@ class Validation_Core extends ArrayObject {
 					// Don't get the default message because we rarely set it. Pass the key since it will
 					//   provide more clues as to the problem than what we are currently providing. Also,
 					//   this allows "custom" inputs to pass through, bypassing localization by design
-					$errors[$input] = $error;
+					//$errors[$input] = $key;
 				}
 			}
 

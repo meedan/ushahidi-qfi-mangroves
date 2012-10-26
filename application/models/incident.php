@@ -46,12 +46,6 @@ class Incident_Model extends ORM {
 	);
 
 	/**
-	 * Many-to-one relationship definition
-	 * @var array
-	 */
-	protected $belongs_to = array('sharing');
-
-	/**
 	 * Database table name
 	 * @var string
 	 */
@@ -147,113 +141,6 @@ class Incident_Model extends ORM {
 		}
 	}
 
-	private static function category_graph_text($sql, $category)
-	{
-		$db = new Database();
-		$query = $db->query($sql);
-		$graph_data = array();
-		$graph = ", \"".  $category[0] ."\": { label: '". str_replace("'","",$category[0]) ."', ";
-		foreach ( $query as $month_count )
-		{
-			array_push($graph_data, "[" . $month_count->time * 1000 . ", " . $month_count->number . "]");
-		}
-		$graph .= "data: [". join($graph_data, ",") . "], ";
-		$graph .= "color: '#". $category[1] ."' ";
-		$graph .= " } ";
-		return $graph;
-	}
-
-	public static function get_incidents_by_interval($interval='month',$start_date=NULL,$end_date=NULL,$active='true',$media_type=NULL)
-	{
-		// Table Prefix
-		$table_prefix = Kohana::config('database.default.table_prefix');
-
-		// get graph data
-		// could not use DB query builder. It does not support parentheses yet
-		$db = new Database();
-
-		$select_date_text = "DATE_FORMAT(incident_date, '%Y-%m-01')";
-		$groupby_date_text = "DATE_FORMAT(incident_date, '%Y%m')";
-		if ($interval == 'day')
-		{
-			$select_date_text = "DATE_FORMAT(incident_date, '%Y-%m-%d')";
-			$groupby_date_text = "DATE_FORMAT(incident_date, '%Y%m%d')";
-		}
-		elseif ($interval == 'hour')
-		{
-			$select_date_text = "DATE_FORMAT(incident_date, '%Y-%m-%d %H:%M')";
-			$groupby_date_text = "DATE_FORMAT(incident_date, '%Y%m%d%H')";
-		}
-		elseif ($interval == 'week')
-		{
-			$select_date_text = "STR_TO_DATE(CONCAT(CAST(YEARWEEK(incident_date) AS CHAR), ' Sunday'), '%X%V %W')";
-			$groupby_date_text = "YEARWEEK(incident_date)";
-		}
-
-		$date_filter = ($start_date) ? ' AND incident_date >= "' . $db->escape($start_date) . '"' : "";
-
-		if ($end_date)
-		{
-			$date_filter .= ' AND incident_date <= "' . $db->escape($end_date) . '"';
-		}
-
-		$active_filter = ($active == 'all' || $active == 'false')? $active_filter = '0,1' : '1';
-
-		$joins = '';
-		$general_filter = '';
-		if (isset($media_type) AND is_numeric($media_type))
-		{
-			$joins = 'INNER JOIN '.$table_prefix.'media AS m ON m.incident_id = i.id';
-			$general_filter = ' AND m.media_type IN ('. $db->escape($media_type)  .')';
-		}
-
-		$graph_data = array();
-		$all_graphs = array();
-
-		$all_graphs['0'] = array();
-		$all_graphs['0']['label'] = 'All Categories';
-		$query_text = 'SELECT UNIX_TIMESTAMP(' . $select_date_text . ') AS time,
-					   COUNT(*) AS number
-					   FROM '.$table_prefix.'incident AS i ' . $joins . '
-					   WHERE incident_active IN (' . $active_filter .')' .
-		$general_filter .'
-					   GROUP BY ' . $groupby_date_text;
-		$query = $db->query($query_text);
-		$all_graphs['0']['data'] = array();
-		foreach ( $query as $month_count )
-		{
-			array_push($all_graphs['0']['data'],
-				array($month_count->time * 1000, $month_count->number));
-		}
-		$all_graphs['0']['color'] = '#990000';
-
-		$query_text = 'SELECT category_id, category_title, category_color, UNIX_TIMESTAMP(' . $select_date_text . ')
-							AS time, COUNT(*) AS number
-								FROM '.$table_prefix.'incident AS i
-							INNER JOIN '.$table_prefix.'incident_category AS ic ON ic.incident_id = i.id
-							INNER JOIN '.$table_prefix.'category AS c ON ic.category_id = c.id
-							' . $joins . '
-							WHERE incident_active IN (' . $active_filter . ')
-								  ' . $general_filter . '
-							GROUP BY ' . $groupby_date_text . ', category_id ';
-		$query = $db->query($query_text);
-		foreach ($query as $month_count)
-		{
-			$category_id = $month_count->category_id;
-			if (!isset($all_graphs[$category_id]))
-			{
-				$all_graphs[$category_id] = array();
-				$all_graphs[$category_id]['label'] = $month_count->category_title;
-				$all_graphs[$category_id]['color'] = '#'. $month_count->category_color;
-				$all_graphs[$category_id]['data'] = array();
-			}
-			array_push($all_graphs[$category_id]['data'],
-				array($month_count->time * 1000, $month_count->number));
-		}
-		$graphs = json_encode($all_graphs);
-		return $graphs;
-	}
-
 	/**
 	 * Get the number of reports by date for dashboard chart
 	 *
@@ -269,29 +156,33 @@ class Incident_Model extends ORM {
 		// Database instance
 		$db = new Database();
 
-		// Filter by User
-		$user_id = (int) $user_id;
-		$u_sql = ($user_id)? " AND user_id = ".$user_id." " : "";
-
-		// Query to generate the report count
-		$sql = 'SELECT COUNT(id) as count, DATE(incident_date) as date, MONTH(incident_date) as month, DAY(incident_date) as day, '
-			. 'YEAR(incident_date) as year '
-			. 'FROM '.$table_prefix.'incident ';
-
-		// Check if the range has been specified and is non-zero then add predicates to the query
-		if ($range != NULL AND intval($range) > 0)
+		$params = array();
+		
+		$db->select(
+				'COUNT(id) as count',
+				'DATE(incident_date) as date',
+				'MONTH(incident_date) as month',
+				'DAY(incident_date) as day',
+				'YEAR(incident_date) as year'
+			)
+			->from('incident')
+			->groupby('date')
+			->orderby('incident_date', 'ASC');
+		
+		if (!empty($user_id))
 		{
-			$sql .= 'WHERE incident_date >= DATE_SUB(CURDATE(), INTERVAL '.$db->escape_str($range).' DAY) ';
+			$db->where('user_id', $user_id);
 		}
-		else
+		
+		if (!empty($range))
 		{
-			$sql .= 'WHERE 1=1 ';
+			// Use Database_Expression to sanitize range param
+			$range_expr = new Database_Expression('incident_date  >= DATE_SUB(CURDATE(), INTERVAL :range DAY)', array(':range' => (int)$range));
+			$db->where(
+				$range_expr->compile()
+			);
 		}
-
-		// Group and order the records
-		$sql .= $u_sql.'GROUP BY date ORDER BY incident_date ASC';
-
-		$query = $db->query($sql);
+		$query = $db->get();
 		$result = $query->result_array(FALSE);
 
 		$array = array();
@@ -347,7 +238,7 @@ class Incident_Model extends ORM {
 	 * @param string $sort How to order the records - only ASC or DESC are allowed
 	 * @return Database_Result
 	 */
-	public static function get_incidents($where = array(), $limit = NULL, $order_field = NULL, $sort = NULL)
+	public static function get_incidents($where = array(), $limit = NULL, $order_field = NULL, $sort = NULL, $count = FALSE)
 	{
 		// Get the table prefix
 		$table_prefix = Kohana::config('database.default.table_prefix');
@@ -365,9 +256,18 @@ class Incident_Model extends ORM {
 		}
 
 		// Query
-		$sql = 'SELECT DISTINCT i.id incident_id, i.incident_title, i.incident_description, i.incident_date, i.incident_mode, i.incident_active, '
-			. 'i.incident_verified, i.location_id, l.country_id, l.location_name, l.latitude, l.longitude ';
-
+		// Normal query
+		if (! $count)
+		{
+			$sql = 'SELECT DISTINCT i.id incident_id, i.incident_title, i.incident_description, i.incident_date, i.incident_mode, i.incident_active, '
+				. 'i.incident_verified, i.location_id, l.country_id, l.location_name, l.latitude, l.longitude ';
+		}
+		// Count query
+		else
+		{
+			$sql = 'SELECT COUNT(DISTINCT i.id) as report_count ';
+		}
+		
 		// Check if all the parameters exist
 		if (count($radius) > 0 AND array_key_exists('latitude', $radius) AND array_key_exists('longitude', $radius)
 			AND array_key_exists('distance', $radius))
@@ -383,9 +283,9 @@ class Incident_Model extends ORM {
 		}
 
 		$sql .=  'FROM '.$table_prefix.'incident i '
-			. 'INNER JOIN '.$table_prefix.'location l ON (i.location_id = l.id) '
-			. 'INNER JOIN '.$table_prefix.'incident_category ic ON (ic.incident_id = i.id) '
-			. 'INNER JOIN '.$table_prefix.'category c ON (ic.category_id = c.id) ';
+			. 'LEFT JOIN '.$table_prefix.'location l ON (i.location_id = l.id) '
+			. 'LEFT JOIN '.$table_prefix.'incident_category ic ON (ic.incident_id = i.id) '
+			. 'LEFT JOIN '.$table_prefix.'category c ON (ic.category_id = c.id) ';
 		
 		// Check if the all reports flag has been specified
 		if (array_key_exists('all_reports', $where) AND $where['all_reports'] == TRUE)
@@ -407,6 +307,8 @@ class Incident_Model extends ORM {
 			}
 		}
 
+		// Might need "GROUP BY i.id" do avoid dupes
+		
 		// Add the having clause
 		$sql .= $having_clause;
 
@@ -429,13 +331,12 @@ class Incident_Model extends ORM {
 		{
 			$sql .= 'LIMIT '.$limit->sql_offset.', '.$limit->items_per_page;
 		}
+		
+		// Event to alter SQL
+		Event::run('ushahidi_filter.get_incidents_sql', $sql);
 
 		// Kohana::log('debug', $sql);
-		// Database instance for the query
-		$db = new Database();
-
-		// Return
-		return $db->query($sql);
+		return Database::instance()->query($sql);
 	}
 
 	/**
@@ -473,7 +374,7 @@ class Incident_Model extends ORM {
 	 * @param int $num_neigbours Number of neigbouring incidents to fetch
 	 * @return mixed FALSE is the parameters are invalid, Result otherwise
 	 */
-	public static function get_neighbouring_incidents($incident_id, $order_by_distance = FALSE, $distance = 0, $num_neighbours)
+	public static function get_neighbouring_incidents($incident_id, $order_by_distance = FALSE, $distance = 0, $num_neighbours = 100)
 	{
 		if (self::is_valid_incident($incident_id))
 		{
@@ -492,19 +393,17 @@ class Incident_Model extends ORM {
 
 			// Query to fetch the neighbour
 			$sql = "SELECT DISTINCT i.*, l.`latitude`, l.`longitude`, l.location_name, "
-				. "((ACOS(SIN( ? * PI() / 180) * SIN(l.`latitude` * PI() / 180) + COS( ? * PI() / 180) * "
-				. "	COS(l.`latitude` * PI() / 180) * COS(( ? - l.`longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS distance "
+				. "((ACOS(SIN( :lat * PI() / 180) * SIN(l.`latitude` * PI() / 180) + COS( :lat * PI() / 180) * "
+				. "	COS(l.`latitude` * PI() / 180) * COS(( :lon - l.`longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS distance "
 				. "FROM `".$table_prefix."incident` AS i "
 				. "INNER JOIN `".$table_prefix."location` AS l ON (l.`id` = i.`location_id`) "
-				. "INNER JOIN `".$table_prefix."incident_category` AS ic ON (i.`id` = ic.`incident_id`) "
-				. "INNER JOIN `".$table_prefix."category` AS c ON (ic.`category_id` = c.`id`) "
 				. "WHERE i.incident_active = 1 "
-				. "AND i.id <> ? ";
+				. "AND i.id <> :incidentid ";
 
 			// Check if the distance has been specified
 			if (intval($distance) > 0)
 			{
-				$sql .= "HAVING distance <= ".intval($distance)." ";
+				$sql .= "HAVING distance <= :distance ";
 			}
 
 			// If the order by distance parameter is TRUE
@@ -520,11 +419,16 @@ class Incident_Model extends ORM {
 			// Has the no. of neigbours been specified
 			if (intval($num_neighbours) > 0)
 			{
-				$sql .= "LIMIT ".intval($num_neighbours);
+				$sql .= "LIMIT :limit";
 			}
+		
+			// Event to alter SQL
+			Event::run('ushahidi_filter.get_neighbouring_incidents_sql', $sql);
 
 			// Fetch records and return
-			return Database::instance()->query($sql, $latitude, $latitude, $longitude, $incident_id);
+			return Database::instance()->query($sql,
+				array(':lat' => $latitude, ':lon' => $longitude, ':incidentid' => $incident_id, ':limit' => (int)$num_neighbours, ':distance' => (int)$distance)
+			);
 		}
 		else
 		{
@@ -588,7 +492,7 @@ class Incident_Model extends ORM {
 		
 		foreach ($photos as $photo)
 		{
-			$this->_delete_photo($photo->id);
+			Media_Model::delete_photo($photo->id);
 		}
 
 		// Delete Media
@@ -616,6 +520,11 @@ class Incident_Model extends ORM {
 		ORM::factory('comment')
 			->where('incident_id', $this->id)
 			->delete_all();
+			
+		// Delete ratings
+		ORM::factory('rating')
+			->where('incident_id', $this->id)
+			->delete_all();
 
 		$incident_id = $this->id;
 
@@ -626,45 +535,35 @@ class Incident_Model extends ORM {
 	}
 
 	/**
-	 * Delete Photo
-	 * @param int $id The unique id of the photo to be deleted
-	 */
-	private function _delete_photo($id)
+	 * Get url of this incident
+	 * @return string
+	 **/
+	public function url()
 	{
-		$photo = ORM::factory('media', $id);
-		$photo_large = $photo->media_link;
-		$photo_medium = $photo->media_medium;
-		$photo_thumb = $photo->media_thumb;
-
-		if (file_exists(Kohana::config('upload.directory', TRUE).$photo_large))
+		return self::get_url($this);
+	}
+	
+	/**
+	 * Get url for the incident object passed
+	 * @param object|int
+	 * @return string
+	 **/
+	public static function get_url($incident)
+	{
+		if (is_object($incident))
 		{
-			unlink(Kohana::config('upload.directory', TRUE).$photo_large);
+			$id = isset($incident->incident_id) ? $incident->incident_id : $incident->id;
 		}
-		elseif (Kohana::config("cdn.cdn_store_dynamic_content") AND valid::url($photo_large))
+		elseif (intval($incident) > 0)
 		{
-			cdn::delete($photo_large);
+			$id = intval($incident);
 		}
-
-		if (file_exists(Kohana::config('upload.directory', TRUE).$photo_medium))
+		else
 		{
-			unlink(Kohana::config('upload.directory', TRUE).$photo_medium);
+			return false;
 		}
-		elseif (Kohana::config("cdn.cdn_store_dynamic_content") AND valid::url($photo_medium))
-		{
-			cdn::delete($photo_medium);
-		}
-
-		if (file_exists(Kohana::config('upload.directory', TRUE).$photo_thumb))
-		{
-			unlink(Kohana::config('upload.directory', TRUE).$photo_thumb);
-		}
-		elseif (Kohana::config("cdn.cdn_store_dynamic_content") AND valid::url($photo_thumb))
-		{
-			cdn::delete($photo_thumb);
-		}
-
-		// Finally Remove from DB
-		$photo->delete();
+		
+		return url::site('reports/view/'.$id);
 	}
 
 }
