@@ -16,11 +16,31 @@
  */
 
 abstract class Controller extends Controller_Core {
+
+	/**
+	 * ORM reference for the currently logged in user
+	 * @var object
+	 */
+	protected $user;
+
+	/**
+	 * Reference to Auth object 
+	 * @var object
+	 */
+	protected $auth;
+	
 	public function __construct()
 	{
 		parent::__construct();
+		
+		// Load profiler
+		// $profiler = new Profiler;
 
-		$this->auth = new Auth();
+		$this->auth = Auth::instance();
+
+		// Get session information
+		$this->user = Auth::instance()->get_user();
+
 		// Are we logged in? if not, do we have an auto-login cookie?
 		if (! $this->auth->logged_in()) {
 			$this->auth->auto_login();
@@ -29,7 +49,8 @@ abstract class Controller extends Controller_Core {
 		// Chceck private deployment access
 		$controller_whitelist = array(
 			'login',
-			'riverid'
+			'riverid',
+			'api'
 		);
 
 		if (Kohana::config('settings.private_deployment'))

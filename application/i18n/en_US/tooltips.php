@@ -1,5 +1,5 @@
 <?php
-	$lang = array(
+$lang = array(
 	'actions' => array(
 		'add_to_category' => 'This adds the report to additional categories. If you select Category 1 here and the report already has Category 2 attached to it, the report will then have both Category 1 and Category 2.',
 		'approve' => 'Approves a report or not. If approved, it will show up publicly.',
@@ -9,6 +9,8 @@
 		'days_of_the_week' => 'If these actions happen on certain days of the week, set that here. Keep in mind the day is determined by the timezone configured on your deployment. Hold shift, command, or control for multiple day selection.',
 		'email_body' => 'Body of the email that will be sent.',
 		'email_subject' => 'Subject of email that will be sent.',
+		'feed_id' => 'The feed can be all feeds or a specific feeds. If you would only like specific feeds to activate a trigger, you will want to select them here. Otherwise, you will want to leave this as "all"',
+		'from' => 'Twitter author username (or multiple usernames separated by commas). If you would like to activate triggers only for twitter messages from a particular user, enter their username here (not including @)',
 		'keywords' => 'You can choose to leave this blank if you do not want to check against keywords. If you add words here, you will need to separate them with a comma (,). For example, if you want to activate a trigger when someone mentions "love" or "peace" in their message, you will want to add "love, peace" in the keywords box.',
 		'location' => 'You can either select anywhere or a specific location. If you select a specific location, you will be asked to draw a box around the area that qualifies an action. For example, if you want this trigger to be activated when someone submits a report in Brazil, you will select "specific area" and then draw the box around Brazil. You can make these boxes as small or as large as you would like. You can also draw multiple boxes.',
 		'on_specific_count' => 'This qualifier will activate the trigger on the N-th count either for the entire collective user base or for each individual user. Leave this blank to ignore it.',
@@ -18,8 +20,8 @@
 		'specific_days' => 'You can select multiple days here. Dates are determined by your deployment timezone setting. In order to default to all dates, do not select any dates.',
 		'trigger' => 'The trigger is the core component of setting up your Action Triggers. This is where you determine if you would like something to happen when someone submits a report, performs a check in, etc. You will be able to filter responses to these actions after selecting one.',
 		'user' => 'The user can be anyone or a specific user. If you would only like specific users to activate a trigger, you will want to select them here. Otherwise, you will want to leave this as "anyone" since most triggers are set up for all users interacting with the system',
-		'verify' => 'Marks a report as verified or not.'
-	),
+		'verify' => 'Marks a report as verified or not.',
+	) ,
 	'change_picture' => 'Profile pages on this site use Gravatar. By clicking on your image, you will be taken to the Gravatar website where you can change your profile picture.',
 	'default_value' => 'Separate each value with a comma, e.g. value1, value2.',
 	'radio_choices' => 'Separate each value with a comma, e.g. value1, value2. In case you want to set a default value, end your list of options with :: e.g If you want to make value3 the default, it will be value1, value2, value3::value3',
@@ -67,6 +69,7 @@
 	'settings_locale' => 'Sets the language that will be used in the site.',
 	'settings_manually_approve_users' => 'If you set this option to yes, you must approve every individual user who creates an account on your site by assigning them roles (ie. Member, Admin, Superadmin).',
 	'settings_map_provider' => 'This defines which map is to be used on the site.',
+	'settings_map_timeline' => 'This shows the timeline based on the date and time reports were submitted',
 	'settings_private_deployment' => 'Setting this value to true or yes will make your deployment private so only users with accounts that you specify will be able to access the deployment.',
 	'settings_require_email_confirmation' => 'Users will be emailed with a confirmation link to click before they are allowed to log into the deployment if this is set to yes. If you enable this after your deployment has accepted users, they will be prompted to confirm their account before they will be allowed to continue using it.',
 	'settings_server_host' => 'This is where the emails reside',
@@ -76,7 +79,7 @@
 	'settings_server_type' => 'This is required to retrieve e-mails from the host server.',
 	'settings_server_username' => 'This is the email address that receives reports.',
 	'settings_share_site_stats' => 'Hit statistics are stored on a server controlled by Ushahidi. By enabling this option, you gain access to hit statistics directly in your admin panel. By disabling it, you will stop collecting statistics and will be unable to recover traffic stats collected while this is turned off.',
-	'settings_site_copyright_statement' =>'Do others have the right to republish text, images, video and/or design themes that you and your users create? Go to https://creativecommons.org/choose/ if you are interested in specifying what others are able to do with your work. And remember to be specific about what elements of the site you are licensing!',
+	'settings_site_copyright_statement' => 'Do others have the right to republish text, images, video and/or design themes that you and your users create? Go to https://creativecommons.org/choose/ if you are interested in specifying what others are able to do with your work. And remember to be specific about what elements of the site you are licensing!',
 	'settings_site_email' => 'This is the email address that will receive email reports and messages from the contact form.',
 	'settings_site_message' => 'This is text that will appear above the map on the homepage. This is useful for giving important information to visitors on the site. To remove the box, simply delete the message here.',
 	'settings_site_name' => 'This is the name of the site that appears at the top of the main site.',
@@ -84,5 +87,5 @@
 	'settings_site_tagline' => 'In a few words, explain what this site is about.',
 	'settings_site_timezone' => 'This is the timezone that your site will operate on. This has an impact on any actions you have set up that utilize time and date, as well as the default current time for reports on the front and back end of the site.',
 	'settings_twitter_configuration' => 'Set the twitter hashtag that will be used on a tweet',
-	);
+);
 ?>

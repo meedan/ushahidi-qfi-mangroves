@@ -38,10 +38,24 @@ class Comments_Api_Object extends Api_Object_Core {
                 break;
             
                 case "spam":
+									// Check for admin access on all comments
+									if ( ! $this->api_service->_login(TRUE) )
+									{
+										$this->set_error_message($this->response(2));
+										return;
+									}
+									
                     $this->response_data = $this->_get_spam_comments();
                 break;
             
                 case "pending":
+									// Check for admin access on all comments
+						  		if ( ! $this->api_service->_login(TRUE) )
+									{
+										$this->set_error_message($this->response(2));
+										return;
+									}
+									
                     $this->response_data = $this->_get_pending_comments();
                 break;
             
@@ -89,6 +103,13 @@ class Comments_Api_Object extends Api_Object_Core {
         else if($this->api_service->verify_array_index(
             $this->request, 'action'))
         {
+				  		// Check for admin access on all comments
+				  		if ( ! $this->api_service->_login(TRUE) )
+							{
+								$this->set_error_message($this->response(2));
+								return;
+							}
+					
             $this->comment_action();
             return;
         }
@@ -166,7 +187,7 @@ class Comments_Api_Object extends Api_Object_Core {
         $json = array();
         $json_item = array();
 
-        $this->query = "SELECT * FROM comment $where $limit";
+        $this->query = "SELECT id, incident_id, comment_author, comment_description, comment_date, user_id FROM comment $where $limit";
         
         $items = $this->db->query($this->query);
 
@@ -191,7 +212,7 @@ class Comments_Api_Object extends Api_Object_Core {
         
         foreach ($items as $list_item) 
         {
-            if ($this->response_type == "json") 
+            if ($this->response_type == "json" OR $this->response_type == "jsonp") 
             {
                 $json_item = (array) $list_item;
             }
@@ -204,14 +225,9 @@ class Comments_Api_Object extends Api_Object_Core {
                 $xml->writeElement('user_id',$list_item->user_id);
                 $xml->writeElement('comment_author',
                         $list_item->comment_author);
-                $xml->writeElement('comment_email',
-                        $list_item->comment_email);
                 $xml->writeElement('comment_description',
                         $list_item->comment_description);
-                $xml->writeElement('comment_ip',$list_item->comment_ip);
-                $xml->writeElement('comment_active',
-                        $list_item->comment_active);
-                $xml->writeElement('comment_date',$list_item->comment_date);
+               $xml->writeElement('comment_date',$list_item->comment_date);
                     
                 $xml->endElement(); // comment
             }
@@ -781,8 +797,8 @@ class Comments_Api_Object extends Api_Object_Core {
 			$incident_comments = array();
 			if ($id)
 			{
-				$this->query = "SELECT id, incident_id, comment_author, comment_email, ";
-				$this->query .= "comment_description,comment_date ";
+				$this->query = "SELECT id, incident_id, comment_author, ";
+				$this->query .= "comment_description, comment_date ";
 				$this->query .= "FROM ".$this->table_prefix."`comment`" ;
 				$this->query .= " WHERE `incident_id` = ".$this->db->escape_str($id)." AND `comment_active` = '1' ";
 				$this->query .= "AND `comment_spam` = '0' ORDER BY `comment_date` ASC";
@@ -794,7 +810,7 @@ class Comments_Api_Object extends Api_Object_Core {
 				foreach ($incident_comments as $comment)
 				{
 					// Needs different treatment depending on the output
-		            if ($this->response_type == 'json')
+		            if ($this->response_type == 'json' OR $this->response_type == 'jsonp')
 		            {
 		                $json_comments[] = array("comment" => $comment);
 		            } 
@@ -815,7 +831,7 @@ class Comments_Api_Object extends Api_Object_Core {
 		                "error" => $this->api_service->get_error_msg(0)
 		        );
 
-				$ret_json_or_xml = ($this->response_type == 'json')
+				$ret_json_or_xml = ($this->response_type == 'json' OR $this->response_type == 'jsonp')
 					? $this->array_as_json($data)
 					: $this->array_as_xml($data, $this->replar);
 
@@ -856,8 +872,8 @@ class Comments_Api_Object extends Api_Object_Core {
 			$checkin_comments = array();
 			if ($id)
 			{
-				$this->query = "SELECT id, checkin_id, comment_author, comment_email, ";
-				$this->query .= "comment_description,comment_date ";
+				$this->query = "SELECT id, checkin_id, comment_author, ";
+				$this->query .= "comment_description, comment_date ";
 				$this->query .= "FROM ".$this->table_prefix."`comment`" ;
 				$this->query .= " WHERE `checkin_id` = ".$this->db->escape_str($id)." AND `comment_active` = '1' ";
 				$this->query .= "AND `comment_spam` = '0' ORDER BY `comment_date` ASC";
@@ -869,7 +885,7 @@ class Comments_Api_Object extends Api_Object_Core {
 				foreach ($checkin_comments as $comment)
 				{
 					// Needs different treatment depending on the output
-		            if ($this->response_type == 'json')
+		            if ($this->response_type == 'json' OR $this->response_type == 'jsonp')
 		            {
 		                $json_comments[] = array("comment" => $comment);
 		            } 
@@ -890,7 +906,7 @@ class Comments_Api_Object extends Api_Object_Core {
 		                "error" => $this->api_service->get_error_msg(0)
 		        );
 
-				$ret_json_or_xml = ($this->response_type == 'json')
+				$ret_json_or_xml = ($this->response_type == 'json' OR $this->response_type == 'jsonp' )
 					? $this->array_as_json($data)
 					: $this->array_as_xml($data, $this->replar);
 

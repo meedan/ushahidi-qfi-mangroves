@@ -6,13 +6,13 @@
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 	<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700" rel="stylesheet" type="text/css">
+	<link href='http://fonts.googleapis.com/css?family=Nunito' rel='stylesheet' type='text/css'>
+
 	<?php echo $header_block; ?>
 		<?php
 	// Action::header_scripts - Additional Inline Scripts from Plugins
 	Event::run('ushahidi_action.header_scripts');
 	?>
-
-	<link href='http://fonts.googleapis.com/css?family=Nunito' rel='stylesheet' type='text/css'>
 </head>
 
 
@@ -71,8 +71,14 @@
 			<!-- submit incident -->
 			<?php echo $submit_btn; ?>
 			<!-- / submit incident -->
-				<div class="welcome-logos"><a href="http://qfi.org"><img src="/themes/mangroves/images/qfi-header.png" style="padding-right:10px;" alt="Qatar Foundation International"></a><a href="http://www.conservation.org/"><img src="/themes/mangroves/images/ci-header.png" alt="Conservation International"></a></div>
-
+			<div class="welcome-logos">
+				<a href="http://qfi.org">
+					<img src="/themes/mangroves/images/qfi-header.png" style="padding-right:10px;" alt="Qatar Foundation International">
+				</a>
+				<a href="http://www.conservation.org/">
+					<img src="/themes/mangroves/images/ci-header.png" alt="Conservation International">
+				</a>
+			</div>
 		</div>
 		<!-- / header -->
          <!-- / header item for plugins -->

@@ -35,14 +35,9 @@ class customforms_Core {
 	{
 		$fields_array = array();
 
-		if($form_id != null AND $form_id != '')
-		{
-			// Validation
-			if (!Form_Model::is_valid_form($form_id))
-			{
-				return $fields_array;
-			}
-		}
+		// If we have a form id but its invalid, return empty
+		if( ! empty($form_id) AND ! Form_Model::is_valid_form($form_id))
+			return $fields_array;
 
 		// Database table prefix
 		$table_prefix = Kohana::config('database.default.table_prefix');
@@ -50,34 +45,53 @@ class customforms_Core {
 		// Get field we'll check permissions against
 		$ispublic_field = ($action == "view") ? 'field_ispublic_visible' : 'field_ispublic_submit';
 
-		// Query to fetch the form fields associated with the given form id
-		$sql = "SELECT ff.*, '' AS form_response FROM ".$table_prefix."form_field ff LEFT JOIN roles r ON (r.id = $ispublic_field) WHERE 1=1 ";
-		
-		if ($form_id != null AND $form_id != '')
-		{
-			$sql .= "AND ff.form_id = ".$form_id." ";
-		}
-		
 		// NOTE will probably need to add a user_level variable for non-web based requests
 		$user_level = self::get_user_max_auth();
+		
+		// Check if incident is valid
+		// Have to do this early since we can't build 2 ORM queries at once.
+		$valid_incident = Incident_Model::is_valid_incident($incident_id, FALSE);
 
-		// Check access_level
-		$sql .= 'AND (r.access_level <= '.$user_level.' OR r.access_level IS NULL)';
-		$sql .= " ORDER BY ff.field_position ASC";
-
-		// Execute the SQL to fetch the custom form fields
-		$form_fields = Database::instance()->query($sql);
+		// Check if the provided incident exists, then fill in the data
+		if ($valid_incident)
+		{
+			$sql = "SELECT form_field.*, form_response.form_response
+			FROM form_field
+			LEFT JOIN roles ON (roles.id = field_ispublic_visible)
+			LEFT JOIN
+				form_response ON (
+					form_response.form_field_id = form_field.id AND
+					form_response.incident_id = :incident_id
+				)
+			WHERE (access_level <= :user_level OR access_level IS NULL) "
+			. ( ! empty($form_id) ? "AND form_id = :form_id " : '')
+			. "ORDER BY field_position ASC";
+		}
+		else
+		{
+			$sql = "SELECT form_field.*
+			FROM form_field
+			LEFT JOIN roles ON (roles.id = field_ispublic_visible)
+			WHERE (access_level <= :user_level OR access_level IS NULL) "
+			. ( ! empty($form_id) ? "AND form_id = :form_id " : '')
+			. "ORDER BY field_position ASC";
+		}
+		
+		$form_fields = Database::instance()->query($sql, array(
+			':form_id' => $form_id,
+			':user_level' => $user_level,
+			':incident_id' => $incident_id
+		));
 
 		foreach ($form_fields as $custom_formfield)
 		{
 			if ($data_only)
 			{
 				// Return Data Only
-				$fields_array[$custom_formfield->id] = $custom_formfield->form_response;
+				$fields_array[$custom_formfield->id] = isset($custom_formfield->form_response) ? $custom_formfield->form_response : '';
 			}
 			else
 			{
-
 				// Return Field Structure
 				$fields_array[$custom_formfield->id] = array(
 					'field_id' => $custom_formfield->id,
@@ -91,60 +105,8 @@ class customforms_Core {
 					'field_isdate' => $custom_formfield->field_isdate,
 					'field_ispublic_visible' => $custom_formfield->field_ispublic_visible,
 					'field_ispublic_submit' => $custom_formfield->field_ispublic_submit,
-					'field_response' => $custom_formfield->form_response
-					);
-			}
-		}
-
-		// Garbage collection
-		unset ($form_fields);
-
-		// Check if the provided incident exists, then fill in the data
-		if (Incident_Model::is_valid_incident($incident_id))
-		{
-			// Overwrite the previous query
-			$sql = "SELECT ff.*, fr.form_response "
-				. "FROM ".$table_prefix."form_field ff "
-				. "RIGHT JOIN ".$table_prefix."form_response fr ON (fr.form_field_id = ff.id) "
-				. "LEFT JOIN roles r ON (r.id = $ispublic_field)"
-				. "WHERE fr.incident_id = ".$incident_id." ";
-
-			if ($form_id != null AND $form_id != '')
-			{
-				$sql .= "AND ff.form_id = ".$form_id." ";
-			}
-
-			$sql .= 'AND (r.access_level <= '.$user_level.' OR r.access_level IS NULL)';
-			$sql .= " ORDER BY ff.field_position ASC";
-
-			// Execute the SQL to fetch the custom form fields
-			$form_fields = Database::instance()->query($sql);
-
-			foreach ($form_fields as $custom_formfield)
-			{
-				if ($data_only)
-				{
-					// Return Data Only
-					$fields_array[$custom_formfield->id] = $custom_formfield->form_response;
-				}
-				else
-				{
-					// Return Field Structure
-					$fields_array[$custom_formfield->id] = array(
-						'field_id' => $custom_formfield->id,
-						'field_name' => $custom_formfield->field_name,
-						'field_type' => $custom_formfield->field_type,
-						'field_default' => $custom_formfield->field_default,
-						'field_required' => $custom_formfield->field_required,
-						'field_maxlength' => $custom_formfield->field_maxlength,
-						'field_height' => $custom_formfield->field_height,
-						'field_width' => $custom_formfield->field_width,
-						'field_isdate' => $custom_formfield->field_isdate,
-						'field_ispublic_visible' => $custom_formfield->field_ispublic_visible,
-						'field_ispublic_submit' => $custom_formfield->field_ispublic_submit,
-						'field_response' => $custom_formfield->form_response
-						);
-				}
+					'field_response' => isset($custom_formfield->form_response) ? $custom_formfield->form_response : '',
+				);
 			}
 		}
 
@@ -373,7 +335,7 @@ class customforms_Core {
 		$form = array();
 		$form['custom_field'] = self::get_custom_form_fields('',$form_id, true);
 		$form['id'] = $form_id;
-		$custom_forms = new View('reports_submit_custom_forms');
+		$custom_forms = new View('reports/submit_custom_forms');
 		$disp_custom_fields = self::get_custom_form_fields('', $form_id,false);
 		$custom_forms->disp_custom_fields = $disp_custom_fields;
 		$custom_forms->form = $form;
@@ -401,7 +363,7 @@ class customforms_Core {
 		$form = array();
 		$form['custom_field'] = self::get_custom_form_fields($incident_id,$form_id, TRUE);
 		$form['id'] = $form_id;
-		$custom_forms = new View('reports_submit_custom_forms');
+		$custom_forms = new View('reports/submit_custom_forms');
 		$disp_custom_fields = self::get_custom_form_fields($incident_id,$form_id, FALSE);
 		$custom_forms->disp_custom_fields = $disp_custom_fields;
 		$custom_forms->form = $form;
