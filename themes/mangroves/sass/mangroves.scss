@@ -16,9 +16,15 @@ $full-width: 940px;
 $dark-blue: #0069aa;
 $light-blue: #3f8ebf;
 $orange: #d7463b;
+$dark-gray: #666;
 $light-gray: #ccc;
 $very-light-gray: lighten($light-gray, 10%);
 $pad: 5px;
+
+@mixin fancy-font {
+  font-family: Nunito, Arial, Helvetica, sans-serif;
+  font-weight: normal;
+}
 
 // ============================================== Main sections
 
@@ -27,10 +33,9 @@ body {
 
   h1,
   a,
-  table.table-list tbody tr td a,
+  table.table-list td a,
   .hover .r_details h3 a.r_title,
-  div.footermenu ul li a,
-  div.search-form input.text {
+  div.footermenu a {
     color: $dark-blue;
   }
 
@@ -44,11 +49,7 @@ body {
   }
 
   h1, h2, h3, h4, h5 {
-    font-family: Nunito, sans-serif;
-    font-weight: normal;
-  }
-
-  h5, h4 {
+    @include fancy-font;
     color: $dark-blue;
   }
   
@@ -56,8 +57,7 @@ body {
     margin: 18px 0 0 0;
     .welcome-logos {
       float: right;
-      margin-right: 10px;
-      margin-top: 10px;
+      margin: 10px 10px 0 0;
     }
   }
 
@@ -67,9 +67,8 @@ body {
       background: none;
       height: 27px;
       a {
-        font-family: 'Nunito', sans-serif;
+        @include fancy-font;
         font-size: 18px;
-        font-weight: 100;
         color: $light-blue;
       }
       a.active {
@@ -103,13 +102,12 @@ body {
       color: #c3c3c3;
       margin-top: -55px;
       margin-right: 10px;
-      font-family: Nunito, sans-serif;
-      font-weight: 100;
+      @include fancy-font;      
       line-height: 1.1;
     }
 
     #main {
-      padding: 0px 10px;
+      padding: 10px;
       #mainmiddle { /* contains the map and category switcher */
         float: left;
         width: $full-width;
@@ -189,244 +187,150 @@ body {
       display: none; // HIDDEN media type filters aka cat-filters
     }
   }
-} //body 
+  
+  
+  /* =======================================  UNTESTED ... can't login .... */
 
 
-/* =======================================  UNTESTED ... can't login .... */
-
-
-div#loggedin_user_action {
-  float: left;
-  width: auto;
-  a, 
-  a:visited {
-    font-weight: bold;
-    padding: 6px;
-    margin-top: 2px;
-    width: auto;
-    display: block;
+  div#loggedin_user_action {
     float: left;
-    color: #5396ff;
-  }
-}
-
-div.slider-holder,
-div.graph-holder {
-  display: none; // HIDDEN home page timeline
-}
-
-div.additional-content {
-  display: none; // HIDDEN home page "how to report"
-}
-
-/* =======================================  Home Page Twitter / Mainstream News blocks */
-div.content-container {
-  background: transparent;
-}
-
-div.block-news {
-  border-left: 1px solid #B8B8B8;
-}
-
-div.content-block h5 span {
-  display: none;
-}
-
-div.content-block .table-list {
-  margin-top: 18px;
-}
-
-th, td {
-  padding: 10px 0!important;
-}
-
-#block-reports .content-block,
-#block-news .content-block {
-  margin: 0;
-  padding: 0;
-  float: left;
-  clear: both;
-  width: 98%;
-  a {
-    color: $orange;
-  }
-  a.more {
-    color: white;
-  }
-}
-
-#block-reports .content-block {
-  border-right: solid 1px #CCC;
-  margin-right: 20px;
-}
-
-#content-column {
-  float: left;
-}
-
-.more {
-  background: $light-blue;
-  color: #ffffff;
-  border-radius: 4px;
-  padding: 5px;
-  text-decoration: none;
-}
-
-/* =======================================  reports listing page */
-#content .big-block {
-  margin: 0 10px;
-  padding: 18px 0;
-}
-
-#rb_list-view .rb_report {
-  background: #fff;
-}
-
-/* =======================================  single report page */
-div#main {
-  padding: 25px 10px;
-}
-
-#main .left-col {
-  position: relative;
-  padding: 35px 10px 10px;
-  margin: 4px 0 0 18px;
-  width: 525px;
-}
-
-.left-col h1.report-title {
-  float: left;
-  position: absolute;
-  top: -18px;
-  left: -18px;
-  padding: 5px;
-  color: $dark-blue;
-}
-
-.report_detail .r_verified {
-  position: absolute;
-  top: 10px;
-  right: 18px;
-}
-
-div.report-additional-reports {
-  position: relative;
-  padding: 35px 10px 10px;
-  margin-left: 18px;
-}
-
-div.report-additional-reports h4 {
-  position: absolute;
-  float: left;
-  top: -18px;
-  left: -18px;
-  padding: 5px;
-  color: $dark-blue;
-}
-
-div.report-additional-reports h5 {
-  font-family: Arial, sans-serif;
-}
-
-div.comment-block {
-  position: relative;
-  padding: 35px 10px 10px;
-}
-
-/* =======================================  reports page */
-.report_right {
-  width: 450px;
-}
-
-/* =======================================  footer */
-div#footer {
-  background: #ccc;
-}
-
-div#underfooter {
-  background: transparent;
-}
-
-div.footermenu ul li a {
-  text-transform: uppercase;
-  font-weight: bold;
-  border-left: 1px solid #666;
-}
-
-.additional-credits {
-  margin-top: 18px;
-}
-
-span.btn-icon {
-  display: block;
-  position: absolute;
-  height: 16px;
-  width: 16px;
-  overflow: hidden;
-  text-indent: -234324px;
-  top: 6px;
-  right: 5px;
-}
-
-.ic-right {
-  background: transparent url(../images/bg_category-filter-controls.png) -32px -41px no-repeat;
-}
-
-.ic-down {
-  background: transparent url(../images/bg_category-filter-controls.png) -32px -55px no-repeat;
-}
-
-.ic-question {
-  background: transparent url(../images/bg_category-filter-controls.png) 0px -49px no-repeat;
-}
-
-.active-toggle .ic-right {
-  background: transparent url(../images/bg_category-filter-controls.png) -32px -55px no-repeat;
-}
-
-/* ======================================== Static content */
-/* NASTY HAX TO DEAL WITH STATIC PAGE CONTENT */
-.big-block {
-  h1 {
-    font-size: 25px;
-  } 
-}
-
-.page_text {
-  font {
-    font-size: 18px!important; 
-    background-color: white!important;
-  }
-  div, p { 
-    padding: 10px 0;
-    font-size: 18px!important; 
-    background-color: white!important;
-    strong {
-      font-size: 25px!important;
+    width: auto;
+    a, 
+    a:visited {
+      font-weight: bold;
+      padding: $pad;
+      margin-top: 2px;
+      width: auto;
+      display: block;
+      float: left;
+      color: #5396ff;
     }
   }
-}
 
-/* ========================================  Report detail page */
+  /* =======================================  Home Page Twitter / Mainstream News blocks */
+  div.content-container {
+    background: white;
+    .content-blocks {
+      table {
+        th, td {
+          padding: 10px 0;
+        }
+      }
 
-a.wider-map {
-  display: none!important; /* hiding this trigger because it is broken ... */
-}
+      #block-reports .content-block {
+        border-right: solid 1px $very-light-gray;
+      }
 
-#report-map #map {
-  width: 340px; // override for a smaller map in this context
-}
+      .content-block {
+        margin-right: 0;
+        a {
+          color: $orange;
+        }
+        a.more {
+          color: white;
+        }
+      }
+      div.content-block h5 span {
+        display: none; // HIDDEN extra copywriting
+      }
+    }
+  }
 
-/* ========================================  Navigation */
-/* HACK TO HIDE SOME MENU ITEMS */
-/* WILL BREAK IF MENU IS REORDERED in DB */
-#mainmenu li:nth-child(2),
-#mainmenu li:nth-child(3),
-#mainmenu li:nth-child(4) {
-  display: none;
-}
+  .more {
+    background: $light-blue;
+    color: #fff;
+    @include border-radius($pad);
+    padding: $pad;
+    text-decoration: none;
+    @include fancy-font;
+    font-weight: normal;
+  }
 
-// ============================================== Openlayers controls
-#OpenLayers_Control_MaximizeDiv {
-  display: none; // hidden not used
-}
+  /* =======================================  reports detail page */
+
+  #main .left-col {
+    padding-top: 30px;
+  }
+
+  .report_detail .r_verified {
+    position: absolute;
+    top: 10px;
+    right: 18px;
+  }
+
+  div.comment-block {
+    padding: $pad;
+  }
+
+  /* =======================================  footer */
+  div#footer {
+    background: $light-gray;
+    div#underfooter {
+      background: transparent;
+    }
+    div.footermenu ul li a {
+      text-transform: uppercase;
+      font-weight: bold;
+      border-left: 1px solid $dark-gray;
+    }
+  }
+
+
+  /* ======================================== Static content */
+  /* SUPER NASTY HAX TO DEAL WITH STATIC PAGE CONTENT USING MSWORD STYLES */
+  .big-block {
+    h1 {
+      font-size: 25px;
+    } 
+  }
+
+  .page_text {
+    font {
+      font-size: 18px!important; 
+      background-color: white!important;
+    }
+    div, p { 
+      padding: 10px 0;
+      font-size: 18px!important; 
+      background-color: white!important;
+      strong {
+        font-size: 25px!important;
+      }
+    }
+  }
+
+  /* ========================================  Report detail page */
+
+  a.wider-map {
+    display: none!important; /* hiding this trigger because it is broken ... */
+  }
+
+  #report-map #map {
+    width: 340px; // override for a smaller map in this context
+  }
+
+  /* ========================================  Navigation */
+  /* HACK TO HIDE SOME MENU ITEMS */
+  /* WILL BREAK IF MENU IS REORDERED in DB */
+  #mainmenu li:nth-child(2),
+  #mainmenu li:nth-child(3),
+  #mainmenu li:nth-child(4) {
+    display: none;
+  }
+
+  // ============================================== Openlayers controls
+  #OpenLayers_Control_MaximizeDiv {
+    display: none; // hidden not used
+  }
+
+  div.slider-holder,
+  div.graph-holder {
+    display: none; // HIDDEN home page timeline
+  }
+
+  div.additional-content {
+    display: none; // HIDDEN home page "how to report"
+  }
+  
+} //body 
+
