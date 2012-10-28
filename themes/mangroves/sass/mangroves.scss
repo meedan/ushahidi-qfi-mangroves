@@ -7,507 +7,216 @@ Author: Chris Blow
 Author Email: cblow@meedan.net
 */
 
+// A word about the strategy here: we are nesting pretty deeply in order to override styles that are included by default from the main ushahidi stylesheets. 
+
+@import "compass/css3";
 
 /* ==============================================  Colors and variables */
 $full-width: 940px;
-$mangrove-blue: #0069aa;
-$mangrove-orange: #d7463b;
+$dark-blue: #0069aa;
+$light-blue: #3f8ebf;
+$orange: #d7463b;
+$light-gray: #ccc;
+$very-light-gray: lighten($light-gray, 10%);
+$pad: 5px;
 
-/* ==============================================  override defaults */
-.floatbox {
-  overflow: visible;
-}
+// ============================================== Main sections
 
-.floatbox .filters {
-  display: none;
-}
-
-/* ============================================== Main styles */
-
-/* contains the map and category switcher */
-#mainmiddle {
-  float: left;
-  width: $full-width;
-  position: relative;
-}
-
-h1,
-a,
-table.table-list tbody tr td a,
-.hover .r_details h3 a.r_title,
-div.footermenu ul li a,
-div.search-form input.text {
-  color: $mangrove-blue;
-}
-
-div.search-form input.text:focus {
-  border-color: $mangrove-blue;
-}
-
-div.submit-incident a,
-.btn_submit,
-div.filters ul li a:hover,
-div.filters ul li a.active,
-ul.category-filters li a:hover,
-ul.category-filters li a.active {
-  background-color: #3f8ebf;
-}
-
-div#loggedin_user_action a,
-div#loggedin_user_action a:visited {
-  color: #fff;
-}
-
-div.submit-incident a:hover,
-.btn_submit:hover,
-div.search-form input.searchbtn,
-div#mainmenu ul li a:hover,
-div#mainmenu a {
-  color: #3f8ebf;
-}
-
-div#mainmenu a.active {
-  color: #fff;
-  background-color: #3f8ebf;
-}
-
-h1, h2, h3, h4, h5 {
-  font-family: Nunito, sans-serif;
-  font-weight: normal;
-}
-
-.welcome-message {
-  border: 1px dashed #c3c3c3;
-  padding: 10px;
-  float: right;
-  width: 320px;
-  font-size: 14px;
-  color: #c3c3c3;
-  margin-top: -55px;
-  margin-right: 10px;
-  font-family: Nunito, sans-serif;
-  font-weight: 100;
-  line-height: 1.1;
-}
-
-.welcome-logos {
-  border: none;
-  padding: 10px;
-  float: right;
-  margin-top: -10px;
-  margin-right: 10px;
-}
-
-#mainmenu {
-  width: 600px;
-  background: white;
-}
-
-#mainmenu a {
-  font-family: 'Nunito', sans-serif;
-  font-size: 18px!important;
-  font-weight: 100!important;
-}
-
-/* HACK TO HIDE SOME MENU ITEMS */
-/* WILL BREAK IF MENU IS REORDERED in DB */
-#mainmenu li:nth-child(2),
-#mainmenu li:nth-child(3),
-#mainmenu li:nth-child(4) {
-  display: none;
-}
-
-
-
-
-/* =======================================  general styles */
-h5, h4 {
-  color: $mangrove-blue;
-}
-
-/* ======================================= structural divs */
-body#page {
+body {
   background: #ffffff;
-  /* Old browsers */
-}
 
-div#middle {
-  background: transparent;
-}
+  h1,
+  a,
+  table.table-list tbody tr td a,
+  .hover .r_details h3 a.r_title,
+  div.footermenu ul li a,
+  div.search-form input.text {
+    color: $dark-blue;
+  }
 
-.big-block {
-  padding: 10px 0;
-}
+  div.search-form input.text:focus {
+    border-color: $dark-blue;
+  }
 
-.page-main #main {
-  padding: 0px 10px;
-}
+  div#loggedin_user_action a,
+  div#loggedin_user_action a:visited {
+    color: #fff;
+  }
 
-/* =======================================  top-bar */
-#top-bar {
-  width: $full-width;
-  background: #120000;
-  height: 40px;
-  position: relative;
-  margin: 0 auto;
-}
+  h1, h2, h3, h4, h5 {
+    font-family: Nunito, sans-serif;
+    font-weight: normal;
+  }
 
-div#searchbox {
-  position: absolute;
-  right: 0;
-  border: none;
-  background: transparent;
-  width: auto;
-}
+  h5, h4 {
+    color: $dark-blue;
+  }
+  
+  #header {
+    margin: 18px 0 0 0;
+    .welcome-logos {
+      float: right;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+  }
+
+  #middle {
+    #mainmenu {
+      width: 600px;
+      background: none;
+      height: 27px;
+      a {
+        font-family: 'Nunito', sans-serif;
+        font-size: 18px;
+        font-weight: 100;
+        color: $light-blue;
+      }
+      a.active {
+        color: #fff;
+        background-color: $light-blue;
+      }
+
+      ul li {
+        color: $light-blue;
+        margin: 0 8px 0 0;
+        a {
+          padding: 3px 5px;
+          -moz-border-radius: 3px;
+          -webkit-border-radius: 3px;
+        }
+      }
+
+      ul li a:hover,
+      a.active {
+        color: #fff;
+      }
+    }
+
+
+    .welcome-message {
+      border: 1px dashed #c3c3c3;
+      padding: 10px;
+      float: right;
+      width: 350px;
+      font-size: 14px;
+      color: #c3c3c3;
+      margin-top: -55px;
+      margin-right: 10px;
+      font-family: Nunito, sans-serif;
+      font-weight: 100;
+      line-height: 1.1;
+    }
+
+    #main {
+      padding: 0px 10px;
+      #mainmiddle { /* contains the map and category switcher */
+        float: left;
+        width: $full-width;
+        position: relative;
+        .floatbox { // contains the map
+          overflow: visible; // override defaults
+          /* =======================================  home page map */
+          #map {
+            border: solid 3px $dark-blue;
+            width: $full-width - 6;
+          }
+
+          #mapStatus {
+            border: 3px solid #c3c3c3;
+            width: $full-width - 6;
+            float: none;
+            overflow: auto;
+            border-top: none;
+          }
+          
+        }      
+        div#right { // contains the categories in the map
+          position: absolute;
+          z-index: 1;
+          right: 30px;
+          top: 20px;
+          width: 156px;
+          .cat-filters { // trigger for the map category filters
+            @include background(linear-gradient(top center, #fff, $very-light-gray));
+            @include border-radius(3px);
+            padding: $pad;
+            span {
+              display: none;
+            }
+          }
+
+          ul.category-filters { // the map category filters with icons
+            background: white;
+            border: 0;
+            padding: $pad;
+            li {
+              display: block;
+              list-style-type: none;
+              img { // the map icons in the filter box
+                width: 17px;
+                height: 17px;
+              }
+              a {
+                font-size: 10px;
+                padding: 2px 4px 2px 2px;
+                @include border-radius(4px);
+                border: 1px solid white;
+                display: block;
+              }
+            }
+            li a:hover,
+            li a.active {
+              border: 1px solid #c2c2c2;
+              color: inherit;
+              margin: 0;
+              background-color: $very-light-gray;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // ======================================= HOMEPAGE HACKS
+  
+  div.submit-incident {
+    display: none; // HIDDEN call to action to add report 
+  }
+
+  .floatbox {
+    .filters {
+      display: none; // HIDDEN media type filters aka cat-filters
+    }
+  }
+} //body 
+
+
+/* =======================================  UNTESTED ... can't login .... */
+
 
 div#loggedin_user_action {
   float: left;
   width: auto;
-}
-
-div#loggedin_user_action a,
-div#loggedin_user_action a:visited {
-  font-weight: bold;
-  padding: 6px;
-  margin-top: 2px;
-  width: auto;
-  display: block;
-  float: left;
-  color: #5396ff;
-}
-
-div.search-form input.text {
-  border: 1px solid;
-}
-
-div.search-form input.text:focus {
-  border: 1px solid;
-}
-
-div.search-form input.searchbtn {
-  width: auto;
-  height: auto;
-  border: 0;
-  text-indent: 0;
-  color: #FFFFFF;
-  display: block;
-  font-size: 12px;
-  background-image: none;
-  background-color: #390D07;
-  margin-left: 10px;
-  line-height: 17px;
-  padding: 2px 5px 3px;
-  text-transform: uppercase;
-  text-shadow: 1px 1px 0 #424242;
-}
-
-/* =======================================  header */
-div#header {
-  height: auto;
-  margin: 18px 0;
-}
-
-/* =======================================  logo box */
-
-div#logo {
-  background-color: transparent;
-  float: none;
-  padding: 0;
-  margin: 0;
-}
-
-div#logo h1 a {
-  color: #222222;
-  font-size: 28px;
-}
-
-div#logo span {
-  font-style: italic;
-  color: #999;
-  font-family: 'Georgia', serif;
-}
-
-div.green-box {
-  background-color: #fff;
-  border-color: $mangrove-blue;
-  border-style: dashed;
-}
-
-div.green-box h3 {
-  font-family: 'Helvetica', 'Arial', sans-serif;
-  color: $mangrove-blue;
-}
-
-/* =======================================  submit report button */
-div.submit-incident {
-  display: none;
-  margin: 0;
-  top: 5%;
-}
-
-div.submit-incident a, .btn_submit {
-  text-shadow: 1px 1px 0 #424242;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-}
-
-/* =======================================  primary nav */
-div#mainmenu {
-  background: none;
-  border: none;
-  height: 27px;
-}
-
-div#mainmenu ul {}
-
-div#mainmenu ul li {
-  color: #3f8ebf;
-  margin: 0 8px 0 0;
-}
-
-div#mainmenu ul li a {
-  padding: 3px 5px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-}
-
-div#mainmenu ul li a:hover,
-div#mainmenu a.active {
-  color: #fff;
-}
-
-#report-map #map {
-  width: 350px;
-}
-
-/* =======================================  filter box */
-#report-map-filter-box {
-  position: absolute;
-  z-index: 1;
-}
-
-div#right {
-  position: absolute;
-  z-index: 1;
-  right: 30px;
-  top: 20px;
-  width: 156px;
-}
-
-.map-menu-box {
-  position: absolute;
-  overflow: auto;
-  background: #f9f7f8;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  -moz-box-shadow: 0px 1px 1.5px #424041;
-  -webkit-box-shadow: 0px 1px 1.5px #424041;
-  box-shadow: 0px 1px 1.5px #424041;
-  filter: progid:DXImageTransform.Microsoft.Shadow(strength=1.5, direction=180, color='#424041');
-  -ms-filter: "progid: DXImageTransform.Microsoft.Shadow(strength=1.5, Direction=180, Color='#424041')";
-}
-
-#the-filters {
-  top: 62px;
-  left: 760px;
-  width: 175px;
-  display: block;
-}
-
-#the-filters h3 {
-  z-index: 1;
-  font-size: 10px;
-  color: #605f5d;
-  text-transform: uppercase;
-  margin-bottom: 5px;
-}
-
-/* =======================================  type and category toggle button */
-#filter-menu-toggle {
-  z-index: 1;
-  position: absolute;
-  top: 30px;
-  left: 760px;
-  width: 120px;
-}
-
-/* =======================================  home page category filter */
-#report-category-filter {
-  padding: 5px;
-  float: left;
-  width: 175px;
-}
-
-ul.category-filters {
-  background: none;
-  border: 0;
-  padding: 0;
-}
-
-
-div.cat-filters strong {
-  display: none;
-  background: pink;
-}
-
-
-ul.category-filters {
-  background: white;
-  padding: 5px;
-  li {
-    display: block;
-    list-style-type: none;
-    overflow: auto;
+  a, 
+  a:visited {
+    font-weight: bold;
+    padding: 6px;
+    margin-top: 2px;
     width: auto;
-    li {
-      clear: left;
-    }
-
-    a {
-      font-size: 10px;
-      padding: 2px 4px 2px 2px;
-      -moz-border-radius: 3px;
-      -webkit-border-radius: 3px;
-      border: 0;
-      margin: 1px;
-      display: block;
-    }
-  }
-  li a:hover,
-  li a.active {
-    background: none;
-    border: 1px solid #c2c2c2;
-    color: inherit;
-    margin: 0;
+    display: block;
+    float: left;
+    color: #5396ff;
   }
 }
-
-
-.swatch, .item-swatch {
-  border-color: #f1f1f1;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-}
-
-
-/* =======================================  home page report type filters */
-#report-type-filter {
-  display: none;
-  overflow: auto;
-  padding: 5px;
-  margin: 0;
-}
-
-div.filters ul li {
-  float: none;
-  margin-bottom: 2px;
-  display: block;
-  overflow: auto;
-}
-
-div.filters ul li a {
-  color: #000;
-  font-weight: bold;
-  padding: 3px 5px 2px;
-  margin: 1px;
-  font-size: 10px;
-  display: block;
-  float: left;
-}
-
-div.filters ul li a span {
-  font-size: 10px;
-}
-
-div.filters ul li a:hover, div.filters ul li a.active {
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  display: block;
-  float: left;
-  padding: 3px 5px 2px;
-  background: none;
-  border: 1px solid #c2c2c2;
-  color: inherit;
-  margin: 0;
-}
-
-/* =======================================  KML layers & Other Deployments */
-/*toggle buttons */
-#layers-menu-toggle {
-  position: absolute;
-  top: 20px;
-  left: 220px;
-  width: 60px;
-}
-
-#other-deployments-menu-toggle {
-  display: none;
-  position: absolute;
-  top: 20px;
-  left: 322px;
-  width: 130px;
-}
-
-#how-to-report-menu-toggle {
-  position: absolute;
-  top: 20px;
-  left: 50px;
-  width: 100px;
-}
-
-#kml_switch,
-#sharing_switch,
-#how-to-report-box {
-  display: none;
-  position: absolute;
-  top: 51px;
-  padding: 5px;
-  left: 50px;
-  background: #f9f7f8;
-  width: 175px;
-  padding-top: 10px;
-}
-
-#sharing_switch {
-  left: 322px;
-}
-
-#how-to-report-box ol {
-  margin-left: 22px;
-}
-
-#how-to-report-box ol li {
-  margin-bottom: 5px;
-}
-
-/* =======================================  home page map */
-#map {
-  border: solid 3px $mangrove-blue;
-  width: $full-width - 6;
-}
-
-#mapStatus {
-  border: 3px solid #c3c3c3;
-  width: $full-width - 6;
-  float: none;
-  overflow: auto;
-  border-top: none;
-}
-
-/* =======================================  home page timeline */
 
 div.slider-holder,
 div.graph-holder {
-  display: none;
+  display: none; // HIDDEN home page timeline
 }
 
-.content-container {
-  padding: 10px!important;
-}
-
-/* =======================================  home page how to report */
 div.additional-content {
-  display: none;
+  display: none; // HIDDEN home page "how to report"
 }
 
 /* =======================================  Home Page Twitter / Mainstream News blocks */
@@ -539,7 +248,7 @@ th, td {
   clear: both;
   width: 98%;
   a {
-    color: $mangrove-orange;
+    color: $orange;
   }
   a.more {
     color: white;
@@ -556,7 +265,7 @@ th, td {
 }
 
 .more {
-  background: #3f8ebf;
+  background: $light-blue;
   color: #ffffff;
   border-radius: 4px;
   padding: 5px;
@@ -591,7 +300,7 @@ div#main {
   top: -18px;
   left: -18px;
   padding: 5px;
-  color: $mangrove-blue;
+  color: $dark-blue;
 }
 
 .report_detail .r_verified {
@@ -612,7 +321,7 @@ div.report-additional-reports h4 {
   top: -18px;
   left: -18px;
   padding: 5px;
-  color: $mangrove-blue;
+  color: $dark-blue;
 }
 
 div.report-additional-reports h5 {
@@ -627,11 +336,6 @@ div.comment-block {
 /* =======================================  reports page */
 .report_right {
   width: 450px;
-}
-
-/* =======================================  get alerts page */
-.step-1 h2 {
-  padding: 0;
 }
 
 /* =======================================  footer */
@@ -651,43 +355,6 @@ div.footermenu ul li a {
 
 .additional-credits {
   margin-top: 18px;
-}
-
-/* =======================================  button styles */
-a.btn {
-  cursor: pointer;
-  display: inline-block;
-  background-color: #e6e6e6;
-  background-repeat: no-repeat;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(white), color-stop(25%, white), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(white, white 25%, #e6e6e6);
-  background-image: -moz-linear-gradient(top, white, white 25%, #e6e6e6);
-  background-image: -ms-linear-gradient(white, white 25%, #e6e6e6);
-  background-image: -o-linear-gradient(white, white 25%, #e6e6e6);
-  background-image: linear-gradient(white, white 25%, #e6e6e6);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
-  padding: 5px 14px 6px;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-  color: #333;
-  font-size: 13px;
-  line-height: normal;
-  border: 1px solid #ccc;
-  border-bottom-color: #bbb;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  -webkit-transition: 0.1s linear all;
-  -moz-transition: 0.1s linear all;
-  transition: 0.1s linear all;
-}
-
-a.btn:hover {
-  background-position: 0 -15px;
-  color: #333;
-  text-decoration: none;
 }
 
 span.btn-icon {
@@ -740,8 +407,26 @@ span.btn-icon {
   }
 }
 
-/* ========================================  Report page */
-/* hiding this because it is broken ... */
+/* ========================================  Report detail page */
+
 a.wider-map {
+  display: none!important; /* hiding this trigger because it is broken ... */
+}
+
+#report-map #map {
+  width: 340px; // override for a smaller map in this context
+}
+
+/* ========================================  Navigation */
+/* HACK TO HIDE SOME MENU ITEMS */
+/* WILL BREAK IF MENU IS REORDERED in DB */
+#mainmenu li:nth-child(2),
+#mainmenu li:nth-child(3),
+#mainmenu li:nth-child(4) {
   display: none;
+}
+
+// ============================================== Openlayers controls
+#OpenLayers_Control_MaximizeDiv {
+  display: none; // hidden not used
 }
