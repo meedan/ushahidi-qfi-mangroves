@@ -47,6 +47,7 @@
 			?>
 			<tr><td>
                         <ul class="demo-streams clearfix unstyled" style="list-style: none; padding: 5px; font-weight: bold;">
+				<li class="demo-stream">Live sensor data:</li>
                                 <li class="demo-stream">Air <span class="stream-1"></span>&deg;C</li>
                                 <li class="demo-stream">Water <span class="stream-2"></span>&deg;C</li>
                         </ul></tr></td>
