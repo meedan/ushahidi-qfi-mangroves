@@ -48,8 +48,12 @@
 			<tr><td>
                         <ul class="demo-streams clearfix unstyled" style="list-style: none; padding: 5px; font-weight: bold;">
 				<li class="demo-stream">Live sensor data:</li>
-                                <li class="demo-stream">Air <span class="stream-1"></span>&deg;C</li>
-                                <li class="demo-stream">Water <span class="stream-2"></span>&deg;C</li>
+                                <li class="demo-stream">Air CO2: <span class="stream-1"></span>ppm</li>
+                                <li class="demo-stream">1m CO2: <span class="stream-2"></span>ppm</li>
+                                <li class="demo-stream">30cm CO2: <span class="stream-3"></span>ppm</li>
+                                <li class="demo-stream">500cm CO2: <span class="stream-4"></span>ppm</li>
+                                <li class="demo-stream">Air: <span class="stream-5"></span>&deg;C</li>
+                                <li class="demo-stream">Water: <span class="stream-6"></span>&deg;C</li>
                         </ul></tr></td>
                         <script>
                                 var $feedid;
@@ -60,6 +64,7 @@
 				    dataType: 'json',
 				    success: function(data) { 
 					    $feedid = data.results[0].id;
+				            console.log($feedid);
 					    if(typeof data.results[0].datastreams[0]['current_value']==='undefined'){
 						$hasValue=false;}
 				 	    else {$hasValue=true;}
@@ -70,11 +75,19 @@
                                 // Set your API key first                                                              
                                 cosm.setKey( "-72s90Uk4eCTIeEyL_YTFxF4ZQCSAKxRZmdsVTQ5OCtFaz0g" );                                                       
 				if($hasValue) {
-	                                $('.demo-streams .stream-1').cosm('live', { feed: $feedid, datastream: 'air' });      
-        	                        $('.demo-streams .stream-2').cosm('live', { feed: $feedid, datastream: 'water' });
+	                                $('.demo-streams .stream-1').cosm('live', { feed: $feedid, datastream: 'Air' });      
+        	                        $('.demo-streams .stream-2').cosm('live', { feed: $feedid, datastream: '1m' });
+	                                $('.demo-streams .stream-3').cosm('live', { feed: $feedid, datastream: '30cm' });      
+        	                        $('.demo-streams .stream-4').cosm('live', { feed: $feedid, datastream: '500cm' });
+	                                $('.demo-streams .stream-5').cosm('live', { feed: $feedid, datastream: 'air' });      
+        	                        $('.demo-streams .stream-6').cosm('live', { feed: $feedid, datastream: 'water' });
 				} else {		
                                         $('.demo-streams .stream-1').html("--");
                                         $('.demo-streams .stream-2').html("--");
+                                        $('.demo-streams .stream-3').html("--");
+                                        $('.demo-streams .stream-4').html("--");
+                                        $('.demo-streams .stream-5').html("--");
+                                        $('.demo-streams .stream-6').html("--");
 				};
                         </script>
 			<?php
