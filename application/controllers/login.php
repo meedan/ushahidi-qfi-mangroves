@@ -103,8 +103,17 @@ class Login_Controller extends Template_Controller {
 		// Show that confirming the email address was a success
 		if (isset($_GET["confirmation_success"]))
 		{
-			$message_class = 'login_success';
-			$message = Kohana::lang('ui_main.confirm_email_successful');
+			// Check if approval is still required
+			if (Kohana::config('settings.manually_approve_users'))
+			{
+				$message_class = 'login_success';
+				$message = Kohana::lang('ui_main.confirm_email_successful_and_approval');
+			}
+			else
+			{
+				$message_class = 'login_success';
+				$message = Kohana::lang('ui_main.confirm_email_successful');
+			}
 		}
 
 		// Is this a password reset request? We need to show the password reset form if it is
@@ -178,8 +187,19 @@ class Login_Controller extends Template_Controller {
 							url::redirect("login?new_confirm_email");
 						}
 						
-						// Generic Error if exception not passed
-						$post->add_error('password', 'login error');
+						// If user isn't approved, show not approved error
+						elseif (Kohana::config('settings.manually_approve_users')
+							AND ! ORM::factory('user', $user)->has(ORM::factory('role', 'login'))
+							)
+						{
+							$post->add_error('username', 'approval error');
+						}
+						
+						else
+						{
+							// Generic Error if exception not passed
+							$post->add_error('password', 'login error');
+						}
 					}
 				}
 				catch (Exception $e)
@@ -263,6 +283,11 @@ class Login_Controller extends Template_Controller {
 					$message_class = 'login_success';
 					$message = Kohana::lang('ui_main.login_confirmation_sent');
 				}
+				elseif ($this->_send_email_admin_approval($user))
+				{
+					$message_class = 'login_success';
+					$message = Kohana::lang('ui_main.login_approval_required');
+				}
 				else
 				{
 					$message_class = 'login_success';
@@ -303,7 +328,7 @@ class Login_Controller extends Template_Controller {
 				// Existing User??
 				if ($user->loaded)
 				{
-
+					$email_sent = FALSE;
 					// Determine which reset method to use. The options are to use the RiverID server
 					//  or to use the normal method which just resets the password locally.
 					if (Kohana::config('riverid.enable') == TRUE AND ! empty($user->riverid))
@@ -315,18 +340,14 @@ class Login_Controller extends Template_Controller {
 
 						$riverid = new RiverID;
 						$riverid->email = $post->resetemail;
-						$riverid->requestpassword($message);
+						$email_sent = $riverid->requestpassword($message);
 					}
 					else
 					{
 						// Reset locally
-
-						// Secret consists of email and the last_login field.
-						// So as soon as the user logs in again,
-						// the reset link expires automatically.
-						$secret = $auth->hash_password($user->email.$user->last_login);
-						$secret_link = url::site('login/index/'.$user->id.'/'.$secret.'?reset');
-						$email_sent = $this->_email_resetlink($post->resetemail,$user->name,$secret_link);
+						$secret = $user->forgot_password_token();
+						$secret_link = url::site('login/index/'.$user->id.'/'.urlencode($secret).'?reset');
+						$email_sent = $this->_email_resetlink($post->resetemail, $user->name, $secret_link);
 					}
 
 					if ($email_sent == TRUE)
@@ -382,7 +403,17 @@ class Login_Controller extends Template_Controller {
 					//   changing their password
 
 					url::redirect("login?change_pw_success");
+					exit();
 				}
+				
+				$post->add_error('token', 'invalid');
+				
+				// repopulate the form fields
+				$form = arr::overwrite($form, $post->as_array());
+
+				// populate the error fields, if any
+				$errors = arr::merge($errors, $post->errors('auth'));
+				$form_error = TRUE;
 			}
 			else
 			{
@@ -647,6 +678,11 @@ class Login_Controller extends Template_Controller {
 				$user->add(ORM::factory('role', 'login'));
 				$user->add(ORM::factory('role', 'member'));
 			}
+			else
+			{
+				// Try sending and email to the admin for approval
+				$this->_send_email_admin_approval($user);
+			}
 
 			$user->save();
 
@@ -761,7 +797,7 @@ class Login_Controller extends Template_Controller {
 							$openid_user->user_id = $user->id;
 							$openid_user->openid = "facebook_".$new_openid["id"];
 							$openid_user->openid_email = $new_openid["email"];
-							$openid_user->openid_server = "http://www.facebook.com";
+							$openid_user->openid_server = Kohana::config('config.external_site_protocol').'://www.facebook.com';
 							$openid_user->openid_date = date("Y-m-d H:i:s");
 							$openid_user->save();
 
@@ -836,12 +872,12 @@ class Login_Controller extends Template_Controller {
 		}
 	}
 
-    /**
-     * Create New password upon user request.
-     */
-    private function _new_password($user_id = 0, $password, $token)
-    {
-    	$auth = Auth::instance();
+	/**
+	 * Create New password upon user request.
+	 */
+	private function _new_password($user_id = 0, $password, $token)
+	{
+		$auth = Auth::instance();
 		$user = ORM::factory('user',$user_id);
 		if ($user->loaded == true)
 		{
@@ -863,29 +899,26 @@ class Login_Controller extends Template_Controller {
 				$riverid->new_password = $password;
 				if ($riverid->setpassword() == FALSE)
 				{
-					// TODO: Something went wrong. Tell the user.
+					return FALSE;
 				}
 
 			}
 			else
 			{
 				// Use Standard
-
-				if($auth->hash_password($user->email.$user->last_login, $auth->find_salt($token)) == $token)
+				if($user->check_forgot_password_token($token))
 				{
 					$user->password = $password;
 					$user->save();
 				}
 				else
 				{
-					// TODO: Something went wrong, tell the user.
+					return FALSE;
 				}
 			}
 
 			return TRUE;
 		}
-
-		// TODO: User doesn't exist, tell the user (meta, I know).
 
 		return FALSE;
 	}
@@ -917,6 +950,45 @@ class Login_Controller extends Template_Controller {
 			array($settings['site_name'], $url));
 
 		email::send($to, $from, $subject, $message, FALSE);
+
+		return TRUE;
+	}
+
+	/**
+	 * Sends an email for admin approval
+	 */
+	private function _send_email_admin_approval($user)
+	{
+		// Check if we require users to go through this process
+		if (! Kohana::config('settings.manually_approve_users'))
+		{
+			return FALSE;
+		}
+
+		$url = url::site('admin/users/edit/'.$user->id);
+
+		$admins = ORM::factory('User')
+			->join('roles_users', 'roles_users.user_id', 'users.id', 'INNER')
+			->join('roles', 'roles_users.role_id', 'roles.id', 'INNER')
+			->where("(roles.name = 'superadmin' OR roles.name = 'admin')")
+			->where("users.notify", 1)
+			->find_all();
+		
+		$emails = $admins->select_list('id', 'email');
+		
+		//$to = $emails;
+		$from = array(Kohana::config('settings.site_email'), Kohana::config('settings.site_name'));
+		$subject = Kohana::config('settings.site_name').' '.Kohana::lang('ui_main.login_signup_admin_approval_subject');
+		$message = Kohana::lang('ui_main.login_signup_admin_approval_message',
+			array(Kohana::config('settings.site_name'), $url));
+
+		foreach ($emails as $id => $email)
+		{
+			if ( ! email::send($email, $from, $subject, $message, FALSE))
+			{
+				Kohana::log('error', "email to $email could not be sent");
+			}
+		}
 
 		return TRUE;
 	}

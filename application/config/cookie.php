@@ -6,7 +6,7 @@
  * you are encouraged to set this option. An empty setting allows the cookie
  * to be read by any website domain.
  */
-$config['domain'] = 'mappingthemangroves.qfi.org';
+$config['domain'] = '';
 
 /**
  * Restrict cookies to a specific path, typically the installation directory.
@@ -26,7 +26,7 @@ $config['expire'] = 0;
 $config['secure'] = FALSE;
 
 /**
- * Enable this option to disable the cookie from being accessed when using a
- * secure protocol. This option is only available in PHP 5.2 and above.
+ * Enable this option to disable the cookie cannot be accessed through client side scripts (ie. JS). This option is only available in PHP 5.2 and above.
+ * Prevent potentially XSS attacks in supported browsers - https://www.owasp.org/index.php/HttpOnly
  */
-$config['httponly'] = FALSE;
+$config['httponly'] = TRUE;

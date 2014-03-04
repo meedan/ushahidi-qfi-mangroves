@@ -39,7 +39,9 @@ jQuery(window).load(function() {
 		mapControls: [
 			new OpenLayers.Control.Navigation({ dragPanOptions: { enableKinetic: true } }),
 			new OpenLayers.Control.Zoom(),
-			new OpenLayers.Control.MousePosition(),
+			new OpenLayers.Control.MousePosition({
+				formatOutput: Ushahidi.convertLongLat
+			}),
 			new OpenLayers.Control.ScaleLine(),
 			new OpenLayers.Control.Scale('mapScale'),
 			new OpenLayers.Control.LayerSwitcher(),
@@ -218,14 +220,7 @@ jQuery(window).load(function() {
 		return false;
 	});
 
-}); // END jQuery(window).load();
-
-jQuery(window).bind("load", function() {
-	jQuery("div#slider1").codaSlider()
-	// jQuery("div#slider2").codaSlider()
-	// etc, etc. Beware of cross-linking difficulties if using multiple sliders on one page.
-});
-
+}); // END jQuery(window).load();	
 
 function rating(id,action,type,loader) {
 	$('#' + loader).html('<img src="<?php echo url::file_loc('img')."media/img/loading_g.gif"; ?>">');

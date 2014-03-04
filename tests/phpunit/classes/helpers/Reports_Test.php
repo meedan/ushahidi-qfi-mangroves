@@ -123,10 +123,15 @@ class Reports_Helper_Test extends PHPUnit_Framework_TestCase {
 		$table_prefix = Kohana::config('database.default.table_prefix');
 		
 		// Expected SQL statement; based on the $filter_params above
+
+		// Distance calculation deets:
+		// 60 = nautical miles per degree of latitude, 1.1515 miles in every nautical mile, 1.609344 km = 1 km
+		// more details about the math here: http://sgowtham.net/ramblings/2009/08/04/php-calculating-distance-between-two-locations-given-their-gps-coordinates/
+
 		$expected_sql = "SELECT DISTINCT i.id incident_id, i.incident_title, i.incident_description, i.incident_date, "
 				. "i.incident_mode, i.incident_active, i.incident_verified, i.location_id, l.country_id, l.location_name, l.latitude, l.longitude "
 				. ", ((ACOS(SIN(".$latitude." * PI() / 180) * SIN(l.`latitude` * PI() / 180) + COS(".$latitude." * PI() / 180) * "
-				. "	COS(l.`latitude` * PI() / 180) * COS((".$longitude." - l.`longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS distance "
+				. "	COS(l.`latitude` * PI() / 180) * COS((".$longitude." - l.`longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515 * 1.609344) AS distance "
 				. "FROM ".$table_prefix."incident i "
 				. "LEFT JOIN ".$table_prefix."location l ON (i.location_id = l.id) "
 				. "LEFT JOIN ".$table_prefix."incident_category ic ON (ic.incident_id = i.id) "
@@ -135,8 +140,8 @@ class Reports_Helper_Test extends PHPUnit_Framework_TestCase {
 				. "AND (c.id IN (".implode(",", $filter_params['c']).") OR c.parent_id IN (".implode(",", $filter_params['c']).")) "
 				. "AND c.category_visible = 1 "
 				. "AND i.incident_mode IN (".implode(",", $filter_params['mode']).") "
-				. "AND i.incident_date >= \"2011-07-07\" "
-				. "AND i.incident_date <= \"2011-07-21\" "
+					. "AND i.incident_date >= \"2011-07-07 00:00:00\" "
+				. "AND i.incident_date <= \"2011-07-21 23:59:59\" "
 				. "AND i.id IN (SELECT DISTINCT incident_id FROM ".$table_prefix."media WHERE media_type IN (".implode(",", $filter_params['m']).")) "
 				. "AND i.incident_verified IN (".$filter_params['v'].") "
 				. "HAVING distance <= ".$filter_params['radius']." "

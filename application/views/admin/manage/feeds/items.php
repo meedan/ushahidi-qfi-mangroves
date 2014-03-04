@@ -29,7 +29,9 @@
 				
 					<!-- tab -->
 					<div class="tab">
-						&nbsp;
+						<ul><li><a href="#" onclick="feedAction('d','<?php echo utf8::strtoupper(Kohana::lang('ui_main.delete')); ?>', '');">
+							<?php echo Kohana::lang('ui_main.delete');?></a>
+						</li></ul>
 					</div>
 				</div>
 				
@@ -56,7 +58,7 @@
 				<!-- report-table -->
 				<?php print form::open(NULL, array('id' => 'feedListing', 'name' => 'feedListing')); ?>
 					<input type="hidden" name="action" id="action" value="">
-					<input type="hidden" name="item_id"  id="item_id_action"  value="">
+					<input type="hidden" name="item_id[]"  id="item_id_action"  value="">
 					<div class="table-holder">
 						<table class="table">
 							<thead>
@@ -119,11 +121,11 @@
 											<ul>
 												<?php
 												if ($incident_id != 0) {
-													echo "<li class=\"none-separator\"><a href=\"". url::base() . 'admin/reports/edit/' . $incident_id ."\" class=\"status_yes\"><strong>".Kohana::lang('ui_main.view_report')."</strong></a></li>";
+													echo "<li class=\"none-separator\"><a href=\"". url::site() . 'admin/reports/edit/' . $incident_id ."\" class=\"status_yes\"><strong>".Kohana::lang('ui_main.view_report')."</strong></a></li>";
 												}
 												else
 												{
-													echo "<li class=\"none-separator\"><a href=\"".url::base().'admin/reports/edit?fid='.$item_id."\">".Kohana::lang('ui_main.create_report')."?</a></li>";
+													echo "<li class=\"none-separator\"><a href=\"".url::site().'admin/reports/edit?fid='.$item_id."\">".Kohana::lang('ui_main.create_report')."?</a></li>";
 												}
 												?>
 											<li><a href="javascript:feedAction('d','DELETE','<?php echo(rawurlencode($item_id)); ?>');"><?php echo utf8::strtoupper(Kohana::lang('ui_main.delete'));?></a></li>

@@ -70,7 +70,7 @@ $config['output_compression'] = TRUE;
  * Enable or disable global XSS filtering of GET, POST, and SERVER data. This
  * option also accepts a string to specify a specific XSS filtering tool.
  */
-$config['global_xss_filtering'] = TRUE;
+$config['global_xss_filtering'] = 'htmlpurifier';
 
 /**
  * Enable or disable hooks. Setting this option to TRUE will enable
@@ -120,6 +120,11 @@ $config['display_errors'] = TRUE;
 $config['render_stats'] = TRUE;
 
 /**
+ * Enable profiler
+ */
+$config['enable_profiler'] = FALSE;
+
+/**
  * Turn MHI on or off. This is an advanced feature that will drastically alter
  * the way your instance works. Please read documentation before proceeding.
  *
@@ -147,6 +152,29 @@ $config['installer_check'] = TRUE;
  * Output scheduler JS in footer
  */
 $config['output_scheduler_js'] = TRUE;
+
+/**
+ * Protocol to use for loading external requests
+ * 
+ * This is used for requests from PHP to external APIs that offer
+ * both http and https. Normally this should default to 'https'
+ * but some countries/firewalls block https requests so its a setting.
+ */
+$config['external_site_protocol'] = 'https';
+
+/**
+ * Allowed HTML tags in report description and other large text fields
+ * 
+ * Formated is based on http://htmlpurifier.org/live/configdoc/plain.html#HTML.Allowed
+ */
+$config['allowed_html'] = "a[href|title],p,img[src|alt],br,b,u,strong,em,i,iframe[width|height|frameborder|src]";
+
+/**
+ * Allowed iframe URLs in report description and other large text fields
+ * 
+ * Formated is based on http://htmlpurifier.org/live/configdoc/plain.html#URI.SafeIframeRegexp
+ */
+$config['safe_iframe_regexp'] = '%^//(www.youtube.com/embed/|player.vimeo.com/video/|w.soundcloud.com/player!)%';
 
 /**
  * Additional resource paths, or "modules". Each path can either be absolute

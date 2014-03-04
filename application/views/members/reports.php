@@ -88,8 +88,8 @@
 								foreach ($incidents as $incident)
 								{
 									$incident_id = $incident->id;
-									$incident_title = strip_tags($incident->incident_title);
-									$incident_description = text::limit_chars(strip_tags($incident->incident_description), 150, "...", true);
+									$incident_title = html::escape($incident->incident_title);
+									$incident_description = text::limit_chars(html::strip_tags($incident->incident_description), 150, "...", true);
 									$incident_date = $incident->incident_date;
 									$incident_date = date('Y-m-d', strtotime($incident->incident_date));
 									$incident_mode = $incident->incident_mode;	// Mode of submission... WEB/SMS/EMAIL?
@@ -147,7 +147,7 @@
 										<td class="col-2">
 											<div class="post">
 												<h4><a href="<?php echo url::site() . 'members/reports/edit/' . $incident_id; ?>" class="more"><?php echo $incident_title; ?></a></h4>
-												<p><?php echo $incident_description; ?>... <a href="<?php echo url::base() . 'members/reports/edit/' . $incident_id; ?>" class="more"><?php echo Kohana::lang('ui_main.more');?></a></p>
+												<p><?php echo $incident_description; ?>... <a href="<?php echo url::site() . 'members/reports/edit/' . $incident_id; ?>" class="more"><?php echo Kohana::lang('ui_main.more');?></a></p>
 											</div>
 											<ul class="info">
 												<li class="none-separator"><?php echo Kohana::lang('ui_main.location');?>: <strong><?php echo html::specialchars($incident_location); ?></strong>,<strong><?php if ($country_id !=0) { echo $countries[$country_id];}?></strong></li>

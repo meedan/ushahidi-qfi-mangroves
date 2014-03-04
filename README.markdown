@@ -75,7 +75,7 @@ Installation
 ------------
 * ####Download and extract Ushahidi
     You can obtain the official release of the software from [the download site](http://download.ushahidi.com). 
-    Alternatively, you can obtain the release running the latest version  of the from [GitHub](https://github.com/ushahidi/Ushahidi_Web/archives/master) - the files are available in .zip and .tar.gz
+    Alternatively, you can find downloads for the current and previous releases on the [Wiki](https://wiki.ushahidi.com/display/WIKI/Ushahidi+Platform+Downloads)
     
     To unzip/extract the archive on a typical Unix/Linux command line:
     
@@ -155,4 +155,4 @@ Installation
 
 Additional Information
 ----------------------
-For further references and documentation, head over to our wiki (http://wiki.ushahidi.com). Also, we encourage you to drop by our forums (http://forums.ushahidi.com/) if you have any additional questions or concerns.
+For further references and documentation, head over to our wiki (http://wiki.ushahidi.com). Also, we encourage you to drop by our forums (https://wiki.ushahidi.com/display/forums/Ushahidi+Forums) if you have any additional questions or concerns.

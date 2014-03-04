@@ -57,11 +57,11 @@ class Stats_Model extends ORM {
 				}
 
 				// URL
-				$val = 'http://'.$_SERVER["HTTP_HOST"].$slashornoslash.$site_domain;
+				$val = url::base();
 				$additional_query = '&val='.base64_encode($val);
 
 				// Site Name
-				$site_name = utf8tohtml::convert(Kohana::config('settings.site_name'),TRUE);
+				$site_name = html::escape(Kohana::config('settings.site_name'));
 				$additional_query .= '&sitename='.base64_encode($site_name);
 
 				// Version
@@ -81,25 +81,9 @@ class Stats_Model extends ORM {
 				$additional_query .= '&lon='.base64_encode($longitude);
 			}
 
-			$url = 'https://tracker.ushahidi.com/dev.px.php?task=tc&siteid='.$stat_id.$additional_query;
-			$curl_handle = curl_init();
-
-			// cURL options
-			$curl_options = array(
-				CURLOPT_URL => $url,
-
-				// Timeout set to 15 seconds. This is somewhat arbitrary and can be changed.
-				CURLOPT_CONNECTTIMEOUT => self::$time_out,
-
-				// Set cURL to store data in variable instead of print
-				CURLOPT_RETURNTRANSFER => 1,
-				CURLOPT_SSL_VERIFYPEER => FALSE
-			);
-
-			curl_setopt_array($curl_handle, $curl_options);
-
-			$buffer = curl_exec($curl_handle);
-			curl_close($curl_handle);
+			$url = Kohana::config('config.external_site_protocol').'://tracker.ushahidi.com/dev.px.php?task=tc&siteid='.$stat_id.$additional_query;
+			$request = new HttpClient($url);
+			$buffer = $request->execute();
 
 			try
 			{
@@ -148,7 +132,7 @@ STATSCOLLECTOR;
 			$twodates = '&twodates='.urlencode($dp1.','.$dp2);
 		}
 
-		$stat_url = 'https://tracker.ushahidi.com/px.php?stat_key='.$stat_key
+		$stat_url = Kohana::config('config.external_site_protocol').'://tracker.ushahidi.com/px.php?stat_key='.$stat_key
 		    .'&task=stats&siteid='.urlencode($stat_id).'&period=day&range='.urlencode($range).$twodates;
 
 		// Ignore errors since we are error checking later
@@ -217,7 +201,7 @@ STATSCOLLECTOR;
 			$twodates = '&twodates='.urlencode($dp1.','.$dp2);
 		}
 
-		$stat_url = 'https://tracker.ushahidi.com/px.php?stat_key='.$stat_key
+		$stat_url = Kohana::config('config.external_site_protocol').'://tracker.ushahidi.com/px.php?stat_key='.$stat_key
 		    .'&task=stats&siteid='.urlencode($stat_id).'&period=day&range='.urlencode($range).$twodates;
 
 		// Ignore errors since we are error checking later
@@ -246,7 +230,7 @@ STATSCOLLECTOR;
 				$data[$date][$code]['label'] = (string) $row->label;
 				$data[$date][$code]['uniques'] = (string) $row->nb_uniq_visitors;
 				$logo = (string) $row->logo;
-				$data[$date][$code]['logo'] = 'https://tracker.ushahidi.com/piwik/'.$logo;
+				$data[$date][$code]['logo'] = Kohana::config('core.site_protocol').'://tracker.ushahidi.com/piwik/'.$logo;
 			}
 		}
 
@@ -513,11 +497,17 @@ STATSCOLLECTOR;
 	 */
 	public function create_site( $sitename, $url)
 	{
-		$stat_url = 'https://tracker.ushahidi.com/px.php?task=cs&sitename='.urlencode($sitename).'&url='.urlencode($url);
+		$stat_url = Kohana::config('config.external_site_protocol').'://tracker.ushahidi.com/px.php?task=cs&sitename='.urlencode($sitename).'&url='.urlencode($url);
 
 		// Ignore errors since we are error checking later
 
-		$xml = simplexml_load_string(Stats_Model::_curl_req($stat_url));
+		$xml = simplexml_load_string(self::_curl_req($stat_url));
+
+		if ($xml === false)
+		{
+			return false;
+		}
+
 		$stat_id = (string) $xml->id[0];
 		$stat_key = (string) $xml->key[0];
 
@@ -537,31 +527,13 @@ STATSCOLLECTOR;
 	 */
 	public function _curl_req($url)
 	{
-		// Make sure cURL is installed
-		if ( ! function_exists('curl_exec'))
+		$request = new HttpClient($url);
+		$buffer = $request->execute();
+
+		if ($buffer === FALSE) 
 		{
-			throw new Kohana_Exception('stats.cURL_not_installed');
-			return false;
+			throw new Kohana_Exception($request->get_error_msg());
 		}
-
-		$curl_handle = curl_init();
-
-		// cURL options
-		$curl_options = array(
-			CURLOPT_URL => $url,
-
-			// Timeout set to 15 seconds. This is somewhat arbitrary and can be changed.
-			CURLOPT_CONNECTTIMEOUT => 15,
-
-			// Set curl to store data in variable instead of print
-			CURLOPT_RETURNTRANSFER => 1,
-
-			CURLOPT_SSL_VERIFYPEER => FALSE
-		);
-
-		curl_setopt_array($curl_handle, $curl_options);
-		$buffer = curl_exec($curl_handle);
-		curl_close($curl_handle);
 
 		return $buffer;
 	}

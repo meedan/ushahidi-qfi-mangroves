@@ -61,6 +61,7 @@ class Form_Field_Model extends ORM {
 		{
 			$field_name = ORM::factory('form_field')
 						->where('field_name', $array->field_name)
+						->where('form_id', $array->form_id)
 						->count_all();
 			if ($field_name > 0)
 			{
@@ -119,6 +120,19 @@ class Form_Field_Model extends ORM {
 		ORM::factory('form_response')->where('form_field_id', $this->id)->delete_all();
 		// Delete all responses associated with this field
 		ORM::factory('form_field_option')->where('form_field_id', $this->id)->delete_all();
+		
+		// Update other fields position
+		$fields = ORM::factory('form_field')
+			->where(array(
+				'form_id' => $this->form_id, 
+				'id != ' => $this->id, 
+				'field_position > ' => $this->field_position))
+			->find_all();
+		foreach($fields as $field)
+		{
+			$field->field_position = $field->field_position - 1;
+			$field->save();
+		}
 		
 		// Delete the field
 		parent::delete();

@@ -17,7 +17,7 @@
 ?>
 		
 // Initialize the Ushahidi namespace
-Ushahidi.baseUrl = "<?php echo url::site(); ?>";
+Ushahidi.baseURL = "<?php echo url::site(); ?>";
 Ushahidi.markerRadius = <?php echo $marker_radius; ?>;
 Ushahidi.markerOpacity = <?php echo $marker_opacity; ?>;
 Ushahidi.markerStokeWidth = <?php echo $marker_stroke_width; ?>;
@@ -77,29 +77,25 @@ function smartColumns() {
 /**
  * Callback function for rendering the timeline
  */
-function refreshTimeline() {
+function refreshTimeline(options) {
 
 	<?php if (Kohana::config('settings.enable_timeline')) {?>
 
-	var options = (arguments.length == 0) ? {} : arguments[0];
-
-	// Compute the start and end dates
-	var from = (options.s == undefined)
-	    ? new Date(startTime * 1000)
-	    : new Date(options.s * 1000);
-
-	var to = (options.e == undefined)
-	    ? new Date(endTime * 1000)
-	    : new Date(options.e * 1000);
+	// Use report filters if no options passed
+	options = options || map.getReportFilters();
+	// Copy options object to avoid accidental modifications to reportFilters
+	options = jQuery.extend({}, options);
 
 	var url = "<?php echo url::site().'json/timeline/'; ?>";
-	url += (options.c !== undefined && parseInt(options.c) > 0) ?  options.c : '';
 
-	var interval = (to - from) / (1000 * 3600 * 24);
+	var interval = (options.e - options.s) / (3600 * 24);
+
 	if (interval <= 3) {
 		options.i = "hour";
-	} else if (interval >= 124) {
+	} else if (interval <= (31 * 6)) {
 		options.i = "day";
+	} else {
+		options.i = "month";
 	}
 
 	// Get the graph data
@@ -119,10 +115,8 @@ function refreshTimeline() {
 				var date = new Date(raw[i][0]);
 
 				var dateStr = date.getFullYear() + "-";
-				dateStr += (date.getMonth() < 10) ? "0" : "";
-				dateStr += (date.getMonth() +1) + "-" ;
-				dateStr += (date.getDate() < 10) ? "0" : "";
-				dateStr += date.getDate();
+				dateStr += ('0' + (date.getMonth()+1)).slice(-2) + '-';
+				dateStr += ('0' + date.getDate()).slice(-2);
 
 				graphData.push([dateStr, parseInt(raw[i][1])]);
 			}
@@ -189,7 +183,7 @@ jQuery(function() {
 			new OpenLayers.Control.Zoom(),
 			new OpenLayers.Control.MousePosition({
 				div: document.getElementById('mapMousePosition'),
-				numdigits: 5
+				formatOutput: Ushahidi.convertLongLat
 			}),
 			new OpenLayers.Control.Scale('mapScale'),
 			new OpenLayers.Control.ScaleLine(),
@@ -200,7 +194,12 @@ jQuery(function() {
 		baseLayers: <?php echo map::layers_array(FALSE); ?>,
 
 		// Display the map projection
-		showProjection: true
+		showProjection: true,
+		
+		reportFilters: {
+			s: startTime,
+			e: endTime
+		}
 
 	};
 
@@ -215,7 +214,10 @@ jQuery(function() {
 
 	// Register the referesh timeline function as a callback
 	map.register("filterschanged", refreshTimeline);
-	setTimeout(function() { refreshTimeline(); }, 1500);
+	setTimeout(function() { refreshTimeline({
+		s: startTime,
+		e: endTime
+	}); }, 800);
 
 
 	// Category Switch Action
@@ -298,10 +300,10 @@ jQuery(function() {
 	});
 	
 	// Media Filter Action
-	$('.filters li a').click(function() {
+	$('.filters a').click(function() {
 		var mediaType = parseFloat(this.id.replace('media_', '')) || 0;
 		
-		$('.filters li a').attr('class', '');
+		$('.filters a.active').removeClass('active');
 		$(this).addClass('active');
 
 		// Update the report filters
@@ -313,86 +315,9 @@ jQuery(function() {
 	//Execute the function when page loads
 	smartColumns();
 
-	// Are checkins enabled?
-	<?php if (Kohana::config('settings.checkins')): ?>
-	
-	// URL for fetching the checkins
-	var checkinsURL = "api/?task=checkin&action=get_ci&mapdata=1&sqllimit=1000&orderby=checkin.checkin_date&sort=ASC";
-
-	// Styling for the checkins
-	var ciStyle = new OpenLayers.Style({
-		pointRadius: 5,
-		fillColor: "${color}",
-		strokeColor: "#FFFFFF",
-		fillOpacity: "${fillOpacity}",
-		strokeOpacity: 0.75,
-		strokeWidth: 1.5
-	});
-
-	var checkinStyleMap = new OpenLayers.StyleMap({
-		default: ciStyle
-	});
-
-	$.getJSON(checkinsURL, function(data)
-	{
-		var jsonFormat = new OpenLayers.Format.JSON();
-		var jsonStr = jsonFormat.write(json2GeoJSON(data));
-		var format = new OpenLayers.Format.GeoJSON();
-		layerFeatures = format.read(jsonStr);
-		if (layerFeatures.length > 0) {
-			// Add the checkins layer
-			map.addLayer(Ushahidi.GEOJSON, {
-				url: checkinsURL,
-				name: "Checkins",
-				features: layerFeatures,
-				styleMap: checkinStyleMap,
-				transform: true,
-			}, false, true);
-		}
-	});
-
-	/**
-	 * Callback function to convert the data -
-	 * returned by the checkins API call - to GeoJSON
-	 */
-	function json2GeoJSON(json) {
-		var GeoJSON = {
-			type: "FeatureCollection",
-			features: []
-		};
-
-		$.each(json["payload"]["checkins"], function(index, checkin){
-			var checkinImage = (checkin.media !== undefined) ? checkin.media[0].medium : "";
-			var checkinLink = (checkinImage !== "") ? checkin.media[0].link : "";
-			var feature = {
-				type: "Feature",
-				properties: {
-					name: checkin.msg,
-					link: checkinLink,
-					color: "#"+checkin.user.color,
-					image: checkinImage,
-					fillOpacity: checkin.opacity,
-				},
-				geometry: {
-					type: "Point",
-					coordinates: [checkin.lon, checkin.lat],
-				}
-			};
-			GeoJSON.features.push(feature);
-		});
-		return GeoJSON;
-	}
-	<?php endif; ?>
-
 });
 
 $(window).resize(function () { 
 	//Each time the viewport is adjusted/resized, execute the function
 	smartColumns();
 });
-
-
-<?php if (Kohana::config('settings.checkins')): ?>
-// EK <emmanuel(at)ushahidi.com
-// TODO: Load the sidebar with the checkins - moving this to BackboneJS
-<?php endif; ?>

@@ -159,12 +159,10 @@ class Alerts_Controller extends Main_Controller {
 		$this->themes->map_enabled = TRUE;
 		$this->themes->js = new View('alerts/alerts_js');
 		$this->themes->treeview_enabled = TRUE;
+		$this->themes->slider_enabled = TRUE;
 		$this->themes->js->latitude = $form['alert_lat'];
 		$this->themes->js->longitude = $form['alert_lon'];
 
-		// Rebuild Header Block
-		$this->template->header->header_block = $this->themes->header_block();
-		$this->template->footer->footer_block = $this->themes->footer_block();
     }
 
 
@@ -192,10 +190,6 @@ class Alerts_Controller extends Main_Controller {
 			// Hide Mobile
 			$this->template->content->show_mobile = FALSE;
 		}
-
-		// Rebuild Header Block
-		$this->template->header->header_block = $this->themes->header_block();
-		$this->template->footer->footer_block = $this->themes->footer_block();
 	}
 
 
@@ -274,9 +268,6 @@ class Alerts_Controller extends Main_Controller {
 			$this->template->content->errno = ER_CODE_NOT_FOUND;
 		}
 
-		// Rebuild Header Block
-		$this->template->header->header_block = $this->themes->header_block();
-		$this->template->footer->footer_block = $this->themes->footer_block();
 	} // END function verify
 
 
@@ -298,9 +289,6 @@ class Alerts_Controller extends Main_Controller {
 			$this->template->content->unsubscribed = TRUE;
 		}
 
-		// Rebuild Header Block
-		$this->template->header->header_block = $this->themes->header_block();
-		$this->template->footer->footer_block = $this->themes->footer_block();
     }
 
 	/**

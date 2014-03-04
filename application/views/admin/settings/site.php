@@ -151,6 +151,13 @@
 								<?php print form::dropdown('allow_comments', $comments_array, $form['allow_comments']); ?>
 							</span>
 						</div>
+						<!--  HT: Number of alert days setting -->
+						<div class="row">
+							<h4><a href="#" class="tooltip" title="<?php echo Kohana::lang("tooltips.settings_alert_days"); ?>"><?php echo Kohana::lang('settings.site.alert_days');?></a>
+							<br /><?php echo Kohana::lang('settings.site.alert_days_notice');?></h4>
+							<?php print form::input('alert_days', $form['alert_days'], ' class="text long2"'); ?>
+						</div>
+						<!--  HT: End of Number of alert days setting -->
 						<div class="row">
 							<h4><a href="#" class="tooltip" title="<?php echo Kohana::lang("tooltips.settings_allow_feed"); ?>"><?php echo Kohana::lang('settings.site.allow_feed');?></a></h4>
 							<span class="sel-holder">
@@ -194,22 +201,9 @@
 							</span>
 						</div>
 						<div class="row">
-							<h4><a href="#" class="tooltip" title="<?php echo Kohana::lang("tooltips.settings_checkins"); ?>"><?php echo Kohana::lang('settings.site.checkins');?></a></h4>
-							<span class="sel-holder">
-								<?php print form::dropdown('checkins', $yesno_array, $form['checkins']); ?>
-							</span>
-						</div>
-						<div class="row">
 						<h4><a href="#" class="tooltip" title="<?php echo Kohana::lang("tooltips.settings_google_analytics"); ?>"><?php echo Kohana::lang('settings.site.google_analytics');?></a></h4>
 							<?php echo Kohana::lang('settings.site.google_analytics_example');?> &nbsp;&nbsp;
 							<?php print form::input('google_analytics', $form['google_analytics'], ' class="text"'); ?>
-						</div>
-						<div class="row">
-							<h4><a href="#" class="tooltip" title="<?php echo Kohana::lang("tooltips.settings_twitter_configuration"); ?>"><?php echo Kohana::lang('settings.site.twitter_configuration');?></a></h4>
-							<div class="row">
-								<?php echo Kohana::lang('settings.site.twitter_hashtags');?>
-								<?php print form::input('twitter_hashtags', $form['twitter_hashtags'], ' class="text"'); ?>
-							</div>
 						</div>
 						<div class="row">
 							<h4><?php echo Kohana::lang('settings.site.api_akismet');?></h4>

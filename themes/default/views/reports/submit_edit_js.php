@@ -86,7 +86,9 @@
 			map.addLayers(<?php echo map::layers_array(FALSE); ?>);
 			map.addControl(new OpenLayers.Control.Navigation());
 			map.addControl(new OpenLayers.Control.Zoom());
-			map.addControl(new OpenLayers.Control.MousePosition());
+			map.addControl(new OpenLayers.Control.MousePosition({
+				formatOutput: Ushahidi.convertLongLat
+			}));
 			map.addControl(new OpenLayers.Control.ScaleLine());
 			map.addControl(new OpenLayers.Control.Scale('mapScale'));
 			map.addControl(new OpenLayers.Control.LayerSwitcher());
@@ -316,9 +318,11 @@
 			});
 			
 			// Event on Latitude/Longitude Typing Change
-			$('#latitude, #longitude').bind("focusout keyup", function() {
+			$('#latitude, #longitude').bind("blur", function() {
 				var newlat = $("#latitude").val();
 				var newlon = $("#longitude").val();
+				// Do nothing if either field is empty.
+				if (newlat == '' || newlon == '') return;
 				if (!isNaN(newlat) && !isNaN(newlon))
 				{
 					// Clear the map first

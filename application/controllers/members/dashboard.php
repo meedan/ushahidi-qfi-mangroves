@@ -47,11 +47,6 @@ class Dashboard_Controller extends Members_Controller {
 			->where("user_id", $this->user->id)
 			->count_all();
 
-		// Total Checkins
-		$this->template->content->checkins = ORM::factory('checkin')
-			->where("user_id", $this->user->id)
-			->count_all();
-
 		// Total Alerts
 		$this->template->content->alerts = ORM::factory('alert')
 			->where("user_id", $this->user->id)
@@ -97,12 +92,12 @@ class Dashboard_Controller extends Members_Controller {
 			'notify' => $this->user->notify,
 			'color' => $this->user->color,
 			'password' => '', // Don't set a new password from here
-			'needinfo' => 0 // After we save this form once, we don't need to show it again
+			'needinfo' => $this->user->needinfo // After we save this form once, we don't need to show it again
 		);
 
 		// Javascript Header
-		$this->template->protochart_enabled = TRUE;
-		$this->template->js = new View('admin/stats/stats_js');
+		$this->themes->protochart_enabled = TRUE;
+		$this->themes->js = new View('admin/stats/stats_js');
 
 		$this->template->content->failure = '';
 

@@ -44,6 +44,12 @@ class Json_Controller extends Template_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+		
+		// Disable profiler
+		if (isset($this->profiler))
+		{
+			$this->profiler->disable();
+		}
 
 		// Set Table Prefix
 		$this->table_prefix = Kohana::config('database.default.table_prefix');
@@ -78,6 +84,7 @@ class Json_Controller extends Template_Controller {
 	{
 		$color = Kohana::config('settings.default_map_all');
 		$icon = "";
+		$markers = FALSE;
 		
 		if (Kohana::config('settings.default_map_all_icon_id'))
 		{
@@ -99,11 +106,15 @@ class Json_Controller extends Template_Controller {
 				$icon = url::convert_uploaded_to_abs($cat->category_image);
 			}
 		}
+		
+		$params = array('color' => $color, 'icon' => $icon);
+		Event::run('ushahidi_filter.json_alter_params', $params);
+		$color = $params['color'];
+		$icon = $params['icon'];
 
 		// Run event ushahidi_filter.json_replace_markers
 		// This allows a plugin to completely replace $markers
 		// If markers are added at this point we don't bother fetching incidents at all
-		$markers = FALSE;
 		Event::run('ushahidi_filter.json_replace_markers', $markers);
 
 		// Fetch the incidents
@@ -169,8 +180,21 @@ class Json_Controller extends Template_Controller {
 		{
 			// Handle both reports::fetch_incidents() response and actual ORM objects
 			$marker->id = isset($marker->incident_id) ? $marker->incident_id : $marker->id;
-			$latitude = isset($marker->latitude) ? $marker->latitude : $marker->location->latitude;
-			$longitude = isset($marker->longitude) ? $marker->longitude : $marker->location->longitude;
+			if (isset($marker->latitude) AND isset($marker->longitude))
+			{
+				$latitude = $marker->latitude;
+				$longitude = $marker->longitude;
+			}
+			elseif (isset($marker->location) AND isset($marker->location->latitude) AND isset($marker->location->longitude))
+			{
+				$latitude = $marker->location->latitude;
+				$longitude = $marker->location->longitude;
+			}
+			else
+			{
+				// No location - skip this report
+				continue;
+			}
 			
 			// Get thumbnail
 			$thumb = "";
@@ -215,7 +239,8 @@ class Json_Controller extends Template_Controller {
 				'thumb' => $thumb,
 				'timestamp' => strtotime($marker->incident_date),
 				'count' => 1,
-				'class' => get_class($marker)
+				'class' => get_class($marker),
+				'title'  => $marker->incident_title
 			);
 			$json_item['geometry'] = array(
 				'type' => 'Point',
@@ -234,7 +259,7 @@ class Json_Controller extends Template_Controller {
 			// Get Incident Geometries
 			if ($include_geometries)
 			{
-				$geometry = $this->_get_geometry($marker->id, $marker->incident_title, $marker->incident_date);
+				$geometry = $this->get_geometry($marker->id, $marker->incident_title, $marker->incident_date, $link);
 				if (count($geometry))
 				{
 					foreach ($geometry as $g)
@@ -507,22 +532,22 @@ class Json_Controller extends Template_Controller {
 		// Change select / group by expression based on interval
 		// Not a great way to do this but can't think of a better option
 		// Default values: month
-		$select_date_text = "DATE_FORMAT(incident_date, '%Y-%m-01')";
-		$groupby_date_text = "DATE_FORMAT(incident_date, '%Y%m')";
+		$select_date_text = "DATE_FORMAT(i.incident_date, '%Y-%m-01')";
+		$groupby_date_text = "DATE_FORMAT(i.incident_date, '%Y%m')";
 		if ($interval == 'day')
 		{
-			$select_date_text = "DATE_FORMAT(incident_date, '%Y-%m-%d')";
-			$groupby_date_text = "DATE_FORMAT(incident_date, '%Y%m%d')";
+			$select_date_text = "DATE_FORMAT(i.incident_date, '%Y-%m-%d')";
+			$groupby_date_text = "DATE_FORMAT(i.incident_date, '%Y%m%d')";
 		}
 		elseif ($interval == 'hour')
 		{
-			$select_date_text = "DATE_FORMAT(incident_date, '%Y-%m-%d %H:%M')";
-			$groupby_date_text = "DATE_FORMAT(incident_date, '%Y%m%d%H')";
+			$select_date_text = "DATE_FORMAT(i.incident_date, '%Y-%m-%d %H:%M')";
+			$groupby_date_text = "DATE_FORMAT(i.incident_date, '%Y%m%d%H')";
 		}
 		elseif ($interval == 'week')
 		{
-			$select_date_text = "STR_TO_DATE(CONCAT(CAST(YEARWEEK(incident_date) AS CHAR), ' Sunday'), '%X%V %W')";
-			$groupby_date_text = "YEARWEEK(incident_date)";
+			$select_date_text = "STR_TO_DATE(CONCAT(CAST(YEARWEEK(i.incident_date) AS CHAR), ' Sunday'), '%X%V %W')";
+			$groupby_date_text = "YEARWEEK(i.incident_date)";
 		}
 
 		$graph_data = array();
@@ -542,20 +567,20 @@ class Json_Controller extends Template_Controller {
 			    . 'WHERE (c.id = :cid OR c.parent_id = :cid)';
 			
 			$params[':cid'] = $category_id;
-			$incident_id_in .= " AND incident.id IN ( $query ) ";
+			$incident_id_in .= " AND i.id IN ( $query ) ";
 		}
 		
 		// Apply start and end date filters
 		if (isset($_GET['s']) AND isset($_GET['e']))
 		{
-			$query = 'SELECT id FROM '.$this->table_prefix.'incident '
-			    . 'WHERE incident_date >= :datestart '
-			    . 'AND incident_date <= :dateend ';
+			$query = 'SELECT filtered_incidents.id FROM '.$this->table_prefix.'incident AS filtered_incidents '
+			    . 'WHERE filtered_incidents.incident_date >= :datestart '
+			    . 'AND filtered_incidents.incident_date <= :dateend ';
 
 			// Cast timestamps to int to avoid php error - they'll be sanitized again by db_query
 			$params[':datestart'] = date("Y-m-d H:i:s", (int)$_GET['s']);
 			$params[':dateend'] = date('Y-m-d H:i:s', (int)$_GET['e']);
-			$incident_id_in .= " AND incident.id IN ( $query ) ";
+			$incident_id_in .= " AND i.id IN ( $query ) ";
 		}
 
 		// Apply media type filters
@@ -565,15 +590,15 @@ class Json_Controller extends Template_Controller {
 			    . "WHERE media_type = :mtype ";
 
 			$params[':mtype'] = $_GET['m'];
-			$incident_id_in .= " AND incident.id IN ( $query ) ";
+			$incident_id_in .= " AND i.id IN ( $query ) ";
 		}
 
 		// Fetch the timeline data
-		$query = 'SELECT UNIX_TIMESTAMP('.$select_date_text.') AS time, COUNT(id) AS number '
-		    . 'FROM '.$this->table_prefix.'incident '
-		    . 'WHERE incident_active = 1 '.$incident_id_in.' '
+		$query = 'SELECT UNIX_TIMESTAMP('.$select_date_text.') AS time, COUNT(i.id) AS number '
+		    . 'FROM '.$this->table_prefix.'incident AS i '
+		    . 'WHERE i.incident_active = 1 '.$incident_id_in.' '
 		    . 'GROUP BY '.$groupby_date_text;
-		
+
 		foreach ($db->query($query, $params) as $items)
 		{
 			array_push($graph_data[0]['data'], array($items->time * 1000, $items->number));
@@ -596,7 +621,7 @@ class Json_Controller extends Template_Controller {
 	
 
 	/**
-	 * Read in new layer KML via file_get_contents
+	 * Read in new layer KML via HttpClient
 	 * @param int $layer_id - ID of the new KML Layer
 	 */
 	public function layer($layer_id = 0)
@@ -624,9 +649,14 @@ class Json_Controller extends Template_Controller {
 				$layer_link = Kohana::config('upload.directory').'/'.$layer_file;
 			}
 
-			$content = file_get_contents($layer_link);
+			$layer_request = new HttpClient($layer_link);
+			$content = $layer_request->execute();
 
-			if ($content !== false)
+			if ($content === FALSE) 
+			{
+				throw new Kohana_Exception($layer_request->get_error_msg());
+			}
+			else
 			{
 				echo $content;
 			}
@@ -642,9 +672,10 @@ class Json_Controller extends Template_Controller {
 	 * @param int $incident_id
 	 * @param string $incident_title
 	 * @param int $incident_date
+	 * @param string $incident_link
 	 * @return array $geometry
 	 */
-	private function _get_geometry($incident_id, $incident_title, $incident_date)
+	protected function get_geometry($incident_id, $incident_title, $incident_date, $incident_link)
 	{
 		$geometry = array();
 		if ($incident_id)
@@ -658,14 +689,11 @@ class Json_Controller extends Template_Controller {
 				$geom_array = $geom->getGeoInterface();
 
 				$title = ($item->geometry_label) ? $item->geometry_label : $incident_title;
-				$link =  url::base()."reports/view/".$incident_id;
-				$item_name = $this->get_title($title, $link);
+				$item_name = $this->get_title($title, $incident_link);
 					
-				$fillcolor = ($item->geometry_color) ? 
-					utf8tohtml::convert($item->geometry_color,TRUE) : "ffcc66";
+				$fillcolor = ($item->geometry_color) ? $item->geometry_color : "ffcc66";
 					
-				$strokecolor = ($item->geometry_color) ? 
-					utf8tohtml::convert($item->geometry_color,TRUE) : "CC0000";
+				$strokecolor = ($item->geometry_color) ? $item->geometry_color : "CC0000";
 					
 				$strokewidth = ($item->geometry_strokewidth) ? $item->geometry_strokewidth : "3";
 
@@ -675,12 +703,12 @@ class Json_Controller extends Template_Controller {
 					'id' => $incident_id,
 					'feature_id' => $item->id,
 					'name' => $item_name,
-					'description' => utf8tohtml::convert($item->geometry_comment,TRUE),
+					'description' => $item->geometry_comment,
 					'color' => $fillcolor,
 					'icon' => '',
 					'strokecolor' => $strokecolor,
 					'strokewidth' => $strokewidth,
-					'link' => $link,
+					'link' => $incident_link,
 					'category' => array(0),
 					'timestamp' => strtotime($incident_date),
 				);
@@ -779,6 +807,12 @@ class Json_Controller extends Template_Controller {
 		$lat_sum = $lon_sum = 0;
 		foreach ($cluster as $marker)
 		{
+			// Normalising data
+			if (is_array($marker))
+			{
+				$marker = (object) $marker;
+			}
+
 			// Handle both reports::fetch_incidents() response and actual ORM objects
 			$latitude = isset($marker->latitude) ? $marker->latitude : $marker->location->latitude;
 			$longitude = isset($marker->longitude) ? $marker->longitude : $marker->location->longitude;
@@ -828,9 +862,7 @@ class Json_Controller extends Template_Controller {
 	 */
 	protected function get_title($title, $url)
 	{
-		$encoded_title = utf8tohtml::convert($title, TRUE);
-		$encoded_title = str_ireplace('"','&#34;',$encoded_title);
-		$item_name = "<a href='$url'>".$encoded_title."</a>";
+		$item_name = "<a href='$url'>".$title."</a>";
 		$item_name = str_replace(array(chr(10),chr(13)), ' ', $item_name);
 		return $item_name;
 	}

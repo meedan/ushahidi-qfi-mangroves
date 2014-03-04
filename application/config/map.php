@@ -34,7 +34,7 @@ $config['marker_stroke_width'] = "2";
  * Values from 1 (very transparent) to 10 (Opaque)
  * Default: 9
  */
-$config['marker_stroke_opacity'] = "9";
+$config['marker_stroke_opacity'] = "3";
 
 
 /**
@@ -80,3 +80,9 @@ $config['latTo'] = "85";
 
 
 
+/**
+ * Determines which geocoding engine to use
+ * Options are google or nominatim
+ */
+
+$config['geocode'] = "nominatim";

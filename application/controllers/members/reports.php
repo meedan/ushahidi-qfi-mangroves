@@ -111,41 +111,6 @@ class Reports_Controller extends Members_Controller {
 							$incident_id = $update->id;
 							$location_id = $update->location_id;
 							$update->delete();
-
-							// Delete Location
-							ORM::factory('location')->where('id',$location_id)->delete_all();
-
-							// Delete Categories
-							ORM::factory('incident_category')->where('incident_id',$incident_id)->delete_all();
-
-							// Delete Translations
-							ORM::factory('incident_lang')->where('incident_id',$incident_id)->delete_all();
-
-							// Delete Photos From Directory
-							foreach (ORM::factory('media')->where('incident_id',$incident_id)->where('media_type', 1) as $photo) 
-							{
-								deletePhoto($photo->id);
-							}
-
-							// Delete Media
-							ORM::factory('media')->where('incident_id',$incident_id)->delete_all();
-
-							// Delete Sender
-							ORM::factory('incident_person')->where('incident_id',$incident_id)->delete_all();
-
-							// Delete relationship to SMS message
-							$updatemessage = ORM::factory('message')->where('incident_id',$incident_id)->find();
-							if ($updatemessage->loaded)
-							{
-								$updatemessage->incident_id = 0;
-								$updatemessage->save();
-							}
-
-							// Delete Comments
-							ORM::factory('comment')->where('incident_id',$incident_id)->delete_all();
-
-							// Action::report_delete - Deleted a Report
-							Event::run('ushahidi_action.report_delete', $update);
 						}
 					}
 					$form_action = utf8::strtoupper(Kohana::lang('ui_admin.deleted'));
@@ -230,7 +195,7 @@ class Reports_Controller extends Members_Controller {
 		$this->template->content->status = $status;
 
 		// Javascript Header
-		$this->template->js = new View('admin/reports/reports_js');
+		$this->themes->js = new View('admin/reports/reports_js');
 	}
 
 
@@ -335,43 +300,7 @@ class Reports_Controller extends Members_Controller {
 		// Retrieve thumbnail photos (if edit);
 		//XXX: fix _get_thumbnails
 		$this->template->content->incident = $this->_get_thumbnails($id);
-		
-		
-		// Are we creating this report from a Checkin?
-		if (isset($_GET['cid']) AND ! empty($_GET['cid']) ) {
-
-			$checkin_id = (int) $_GET['cid'];
-			$checkin = ORM::factory('checkin', $checkin_id);
-
-			if ($checkin->loaded)
-			{
-				// Has a report already been created for this Checkin?
-				if ( (int) $checkin->incident_id > 0)
-				{
-					// Redirect to report
-					url::redirect('members/reports/edit/'. $checkin->incident_id);
-				}
-
-				$incident_description = $checkin->checkin_description;
-				$incident_title = text::limit_chars(strip_tags($incident_description), 100, "...", true);
-				$form['incident_title'] = $incident_title;
-				$form['incident_description'] = $incident_description;
-				$form['incident_date'] = date('m/d/Y', strtotime($checkin->checkin_date));
-				$form['incident_hour'] = date('h', strtotime($checkin->checkin_date));
-				$form['incident_minute'] = date('i', strtotime($checkin->checkin_date));
-				$form['incident_ampm'] = date('a', strtotime($checkin->checkin_date));
-
-				// Does the sender of this message have a location?
-				if ($checkin->location->loaded)
-				{
-					$form['location_id'] = $checkin->location_id;
-					$form['latitude'] = $checkin->location->latitude;
-					$form['longitude'] = $checkin->location->longitude;
-					$form['location_name'] = $checkin->location->location_name;
-				}
-			}
-		}
-		
+	
 
 		// Check, has the form been submitted, if so, setup validation
 		if ($_POST)
@@ -403,30 +332,10 @@ class Reports_Controller extends Members_Controller {
 
 				// STEP 6: SAVE PERSONAL INFORMATION
 				reports::save_personal_info($post, $incident);
-				
-				// If creating a report from a checkin
-				if (isset($checkin_id) AND $checkin_id != "")
-				{
-					$checkin = ORM::factory('checkin', $checkin_id);
-					if ($checkin->loaded)
-					{
-						$checkin->incident_id = $incident->id;
-						$checkin->save();
-					
-						// Attach all the media items in this checkin to the report
-						foreach ($checkin->media as $media)
-						{
-							$media->incident_id = $incident->id;
-							$media->save();
-						}
-					}
-				}
 
 				// Action::report_add / report_submit_members - Added a New Report
-				// ++ Do we need two events for this? Or will one suffice?
-				// Event::run('ushahidi_action.report_add', $incident);
 				Event::run('ushahidi_action.report_submit_members', $post);
-
+				Event::run('ushahidi_action.report_edit', $incident);
 
 				// SAVE AND CLOSE?
 				if ($post->save == 1)
@@ -554,70 +463,63 @@ class Reports_Controller extends Members_Controller {
 		$this->template->content->form_saved = $form_saved;
 
 		// Retrieve Custom Form Fields Structure
-		$disp_custom_fields = customforms::get_custom_form_fields($id, $form_id, FALSE);
-		$this->template->content->disp_custom_fields = $disp_custom_fields;
+		$this->template->content->custom_forms = new View('reports/submit_custom_forms');
+		$disp_custom_fields = customforms::get_custom_form_fields($id, $form['form_id'], FALSE, "view");
+		$custom_field_mismatch = customforms::get_edit_mismatch($form['form_id']);
+		// Quick hack to make sure view-only fields have data set
+		foreach ($custom_field_mismatch as $id => $field)
+		{
+			$form['custom_field'][$id] = $disp_custom_fields[$id]['field_response'];
+		}
+		$this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
+		$this->template->content->custom_forms->custom_field_mismatch = $custom_field_mismatch;
+		$this->template->content->custom_forms->form = $form;
 
 		// Retrieve Previous & Next Records
 		$previous = ORM::factory('incident')->where('id < ', $id)->orderby('id','desc')->find();
 		$previous_url = $previous->loaded
-		    ? url::base().'members/reports/edit/'.$previous->id
-		    : url::base().'members/reports/';
+		    ? url::site('members/reports/edit/'.$previous->id)
+		    : url::site().'members/reports/';
 		$next = ORM::factory('incident')->where('id > ', $id)->orderby('id','desc')->find();
 
 		$next_url = $next->loaded
-		    ? url::base().'members/reports/edit/'.$next->id
-		    : url::base().'members/reports/';
+		    ? url::site('members/reports/edit/'.$next->id)
+		    : url::site('members/reports/');
 		$this->template->content->previous_url = $previous_url;
 		$this->template->content->next_url = $next_url;
 
 		// Javascript Header
-		$this->template->map_enabled = TRUE;
-		$this->template->colorpicker_enabled = TRUE;
-		$this->template->treeview_enabled = TRUE;
-		$this->template->json2_enabled = TRUE;
+		$this->themes->map_enabled = TRUE;
+		$this->themes->colorpicker_enabled = TRUE;
+		$this->themes->treeview_enabled = TRUE;
+		$this->themes->json2_enabled = TRUE;
 		
-		$this->template->js = new View('reports/submit_edit_js');
-		$this->template->js->edit_mode = FALSE;
-		$this->template->js->default_map = Kohana::config('settings.default_map');
-		$this->template->js->default_zoom = Kohana::config('settings.default_zoom');
+		$this->themes->js = new View('reports/submit_edit_js');
+		$this->themes->js->edit_mode = FALSE;
+		$this->themes->js->default_map = Kohana::config('settings.default_map');
+		$this->themes->js->default_zoom = Kohana::config('settings.default_zoom');
 
 		if ( ! $form['latitude'] OR ! $form['latitude'])
 		{
-			$this->template->js->latitude = Kohana::config('settings.default_lat');
-			$this->template->js->longitude = Kohana::config('settings.default_lon');
+			$this->themes->js->latitude = Kohana::config('settings.default_lat');
+			$this->themes->js->longitude = Kohana::config('settings.default_lon');
 		}
 		else
 		{
-			$this->template->js->latitude = $form['latitude'];
-			$this->template->js->longitude = $form['longitude'];
+			$this->themes->js->latitude = $form['latitude'];
+			$this->themes->js->longitude = $form['longitude'];
 		}
 		
-		$this->template->js->incident_zoom = $form['incident_zoom'];
-		$this->template->js->geometries = $form['geometry'];
+		$this->themes->js->incident_zoom = $form['incident_zoom'];
+		$this->themes->js->geometries = $form['geometry'];
 
 		// Inline Javascript
 		$this->template->content->date_picker_js = $this->_date_picker_js();
 		$this->template->content->color_picker_js = $this->_color_picker_js();
 		
 		// Pack Javascript
-		$myPacker = new javascriptpacker($this->template->js , 'Normal', FALSE, FALSE);
-		$this->template->js = $myPacker->pack();
-	}
-	
-
-	/**
-	* Delete Photo
-	* @param int $id The unique id of the photo to be deleted
-	*/
-	public function deletePhoto ($id)
-	{
-		$this->auto_render = FALSE;
-		$this->template = "";
-
-		if ($id)
-		{
-			Media_Model::delete_photo($id);
-		}
+		$myPacker = new javascriptpacker($this->themes->js , 'Normal', FALSE, FALSE);
+		$this->themes->js = $myPacker->pack();
 	}
 
 	/* private functions */
@@ -838,11 +740,5 @@ class Reports_Controller extends Members_Controller {
 		{
 			return "1=1";
 		}
-	}
-
-	private function _csv_text($text)
-	{
-		$text = stripslashes(htmlspecialchars($text));
-		return $text;
 	}
 }

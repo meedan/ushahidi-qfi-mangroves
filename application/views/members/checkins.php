@@ -84,7 +84,7 @@
 						$latitude = $checkin->location->latitude;
 						$longitude = $checkin->location->longitude;
 						$description = $checkin->checkin_description;
-						$preview = text::limit_chars(strip_tags($description), 150, "...", true);
+						$preview = text::limit_chars(html::strip_tags($description), 150, "...", true);
 						
 						$checkin_date = date('Y-m-d h:i', strtotime($checkin->checkin_date));
 						$auto_checkin = ($checkin->checkin_auto) ? "YES" : "NO";
@@ -130,11 +130,11 @@
 								<?php
 								if ((int) $incident_id)
 								{
-									echo "<li class=\"none-separator\"><a href=\"". url::base() . 'members/reports/edit/' . $incident_id ."\" class=\"status_yes\"><strong>".Kohana::lang('ui_admin.view_report')."</strong></a></li>";
+									echo "<li class=\"none-separator\"><a href=\"". url::site() . 'members/reports/edit/' . $incident_id ."\" class=\"status_yes\"><strong>".Kohana::lang('ui_admin.view_report')."</strong></a></li>";
 								}
 								else
 								{
-									echo "<li class=\"none-separator\"><a href=\"". url::base() . 'members/reports/edit?cid=' . $checkin_id ."\">".Kohana::lang('ui_admin.create_report')."?</a></li>";
+									echo "<li class=\"none-separator\"><a href=\"". url::site() . 'members/reports/edit?cid=' . $checkin_id ."\">".Kohana::lang('ui_admin.create_report')."?</a></li>";
 								}
 								?>
 								<li class="none-separator"><a href="javascript:checkinAction('d','DELETE','<?php echo(rawurlencode($checkin_id)); ?>')" class="del"><?php echo Kohana::lang('ui_main.delete');?></a></li>
