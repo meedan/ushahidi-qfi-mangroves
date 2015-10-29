@@ -1,3 +1,8 @@
 application/cache/*
 application/logs/*
 media/uploads/*
+upgrader_removed_files.txt
+application/config/auth.php
+application/config/config.php
+application/config/database.php
+application/config/encryption.php
